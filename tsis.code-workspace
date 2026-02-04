@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "../database"
+		},
+		{
+			"path": "../ec2_python"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"postman.settings.dotenv-detection-notification-visibility": false
+	}
+}

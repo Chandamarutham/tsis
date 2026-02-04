@@ -1,0 +1,10 @@
+@import "tailwindcss";
+@import "@styles/theme.css";
+
+#root {
+  @apply min-h-screen w-full;
+}
+
+main {
+  @apply flex-1;
+}

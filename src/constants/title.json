@@ -1,0 +1,27 @@
+{
+    "name": [
+        {
+            "en": "Your Identity",
+            "ta": "உங்கள் அடையாளம்"
+        },
+        {
+            "en": "Address Details",
+            "ta": "முகவரி விவரங்கள்"
+        },        {
+            "en": "Your Details",
+            "ta": "உங்கள் விவரங்கள்"
+        },
+        {
+            "en": "Family Details",
+            "ta": "குடும்ப விவரங்கள்"
+        },
+        {
+            "en": "Communication",
+            "ta": "தொலைதொடர்பு"
+        },
+        {
+            "en": "Submission",
+            "ta": "சமர்ப்பித்தல்"
+        }
+    ]
+}

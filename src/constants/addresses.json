@@ -1,0 +1,12 @@
+{
+    "type":[
+        {
+            "en": "Current Address",
+            "ta": "தற்போதைய முகவரி"
+        },
+        {
+            "en": "Permanent Address",
+            "ta": "நிரந்தர முகவரி"
+        }
+    ]
+}

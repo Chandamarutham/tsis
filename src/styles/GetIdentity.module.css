@@ -1,0 +1,139 @@
+@import "tailwindcss";
+@import "@styles/theme.css";
+
+.form {
+  @apply w-full flex flex-col justify-around py-4 px-2;
+  @apply bg-form rounded-lg shadow-md;
+  @apply border-2 gap-2  border-input-border rounded-lg;
+}
+
+.gridLayout {
+  @apply grid grid-cols-1 gap-0.5;
+  @apply md:grid-cols-12;
+  @apply lg:grid-cols-12;
+}
+
+.spans6Columns {
+  @apply md:col-span-6 lg:col-span-6;
+}
+
+.spansFullWidth {
+  @apply md:col-span-12 lg:col-span-12;
+}
+
+.formGroup {
+  @apply flex flex-col w-full p-2 justify-center;
+  @apply md:flex-row md:gap-2;
+  @apply lg:flex-row lg:gap-2;
+}
+
+.formLabel {
+  @apply text-small text-secondary shrink-0 self-center px-2 wrap-break-word;
+  @apply md:text-medium;
+  @apply lg:text-regular;
+}
+
+/* Common for all elements in identity form */
+.inputField,
+.phoneInput,
+.countryCodeSelect,
+.phoneGroup {
+  @apply w-full bg-secondary-dark rounded-lg;
+  @apply text-small transition-all duration-200 ease-in-out;
+  @apply md:text-medium;
+}
+
+/* padding x settings in identity form */
+.inputField,
+.phoneInput,
+.countryCodeSelect {
+  @apply px-1;
+  @apply md:p-2;
+}
+
+.phoneGroup {
+  @apply px-0;
+}
+
+/* Border, Focus and Height-Width settings in identity form */
+.inputField,
+.phoneGroup {
+  @apply border border-input-border rounded-lg h-8;
+  @apply md:h-12;
+  @apply lg:h-12;
+}
+
+.inputField {
+  @apply focus:border-3 focus:border-focus  focus:bg-primary focus:shadow;
+}
+
+.phoneGroup {
+  @apply flex;
+  @apply focus-within:border-3 focus-within:border-focus  focus-within:bg-primary focus-within:shadow;
+}
+
+.phoneInput,
+.countryCodeSelect,
+.noBorder {
+  @apply w-full h-full border-0 border-none! bg-transparent;
+}
+
+.phoneInput:focus,
+.countryCodeSelect:focus,
+.noBorder:focus {
+  @apply outline-none! border-none! shadow-none!;
+}
+
+.countryCodeSelect[data-length="1"] {
+  width: 6ch;
+}
+.countryCodeSelect[data-length="2"] {
+  width: 7ch;
+}
+.countryCodeSelect[data-length="3"] {
+  width: 8ch;
+}
+.countryCodeSelect[data-length="4"] {
+  width: 9ch;
+}
+.countryCodeSelect[data-length="5"] {
+  width: 10ch;
+}
+
+.noBorder:focus-within {
+  @apply outline-none! border-none! shadow-none!;
+}
+
+.countryCodeSelect {
+  @apply cursor-pointer;
+}
+
+.countryCodeSelect option {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  @apply font-english text-medium;
+  @apply md:text-medium;
+  @apply lg:text-regular;
+}
+
+.separator {
+  @apply border-t-2 border-input-border my-2;
+}
+
+.nextButton {
+  @apply w-full  mt-4 py-2 px-4;
+  @apply bg-button  text-white font-medium rounded-lg shadow-md;
+  @apply transition-all duration-200 ease-in-out;
+  @apply md:col-span-3 md:col-start-10;
+  @apply lg:col-span-3 lg:col-start-10;
+}
+
+.disabledButton {
+  @apply bg-gray-400 cursor-not-allowed;
+}
+
+
+.inputError {
+  @apply border-error-text focus:border-2 focus:bg-primary focus:shadow;
+}

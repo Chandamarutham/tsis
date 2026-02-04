@@ -1,0 +1,60 @@
+@import "tailwindcss";
+@import "@styles/theme.css";
+
+.navbar {
+  @apply sticky mx-auto w-full top-0 z-50 border-b border-gray-200 bg-primary-light shadow-md;
+  position: -webkit-sticky; /* For Safari */
+}
+
+.navList {
+  @apply flex list-none gap-4 justify-center items-center;
+}
+
+.activeLink,
+.link {
+  @apply decoration-0 px-4 py-2 block cursor-pointer;
+  @apply text-primary-dark text-small;
+  @apply lg:text-regular lg:w-34;
+  @apply hover:text-focus;
+}
+
+.dropdown {
+  @apply relative;
+}
+
+.dropdown:hover .dropdownMenu {
+  @apply block;
+}
+
+.dropdownMenu {
+  @apply hidden absolute top-full left-0 bg-primary-light border border-primary-dark;
+  @apply shadow-md min-w-32 z-50 list-none m-0 p-0 opacity-100;
+}
+
+.dropdownMenu li {
+  @apply border-b border-focus;
+}
+
+.dropdownMenu li:last-child {
+  @apply border-0;
+}
+
+.dropdownMenu .link,
+.dropdownMenu .activeLink {
+  @apply px-2 py-2 whitespace-nowrap;
+  @apply hover:bg-primary;
+}
+
+.menuText {
+  @apply ml-2 hidden md:inline;
+}
+
+.buttonContainer {
+  @apply flex items-center h-full;
+}
+
+.langButton {
+  @apply border-0 cursor-pointer bg-secondary w-16;
+  @apply text-small text-secondary-dark;
+  @apply px-1 py-1;
+}

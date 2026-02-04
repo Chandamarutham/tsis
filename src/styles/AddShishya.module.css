@@ -1,0 +1,21 @@
+@import "tailwindcss";
+@import "@styles/theme.css";
+
+.masterContainer {
+  @apply max-w-5xl flex flex-col bg-formbox rounded-lg shadow-lg;
+  @apply mt-8 mx-auto px-4 items-center;
+}
+
+.innerBox {
+  @apply w-full m-4 p-2 bg-white rounded-b-lg shadow-md;
+}
+
+.stateTitle {
+  @apply text-regular font-semibold text-primary-dark text-center;
+  @apply md:text-subtitle md:font-semibold;
+  @apply lg:text-title lg:font-bold;
+}
+
+.error {
+  @apply block text-error-text text-sm mt-1 font-english text-center;
+}

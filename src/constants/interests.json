@@ -1,0 +1,12 @@
+{
+    "list": [
+        { "ta": "இசை", "en": "Music" },
+        { "ta": "ஓவியம்", "en": "Painting" },
+        { "ta": "நடனம்", "en": "Dance" },
+        { "ta": "சுலோகங்கள் / பிரபந்தம்", "en": "Shlokas / Prabandam" },
+        { "ta": "உபந்யாஸம்", "en": "Upanyasa" },
+        { "ta": "இலக்கியம்", "en": "Literature" },
+        { "ta": "மென்பொருள்", "en": "Software" },
+        { "ta": "சேவை / கைங்கர்யங்கள்", "en": "Service" }
+    ]
+}
