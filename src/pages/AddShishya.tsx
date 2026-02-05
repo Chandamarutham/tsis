@@ -11,7 +11,8 @@ import type {
     AddressDataType, 
     FamilyMemberDataType, 
     PreferencesType ,
-    ShishyaDataType
+    ShishyaDataType,
+    ShishyaDataResultType
 } from '@typedef/ShishyaData';
 
 import { 
@@ -29,6 +30,7 @@ import GetBasicData from '@components/GetBasicData';
 import GetFamily from '@components/GetFamily';
 import GetPreferences from '@components/GetPreferences';
 import GetConfirmation from '@components/GetConfirmation';
+import ShowCompletion from '@components/ShowCompletion';
 
 import titles from '@constants/title.json';
 
@@ -45,6 +47,13 @@ export default function AddShishya() {
         addresses: [emptyCurrentAddressData, emptyAddressData],
         family_members: [emptyFamilyMemberData],
         preferences: emptyPreferencesData
+    });
+    const [resultMessage, setResultMessage] = useState<ShishyaDataResultType>({
+        count: 0,
+        message: "",
+        current_address_id: "",
+        permanent_address_id: "",
+        family_id: ""
     });
 
     const language: 'en' | 'ta'  = useContext(LanguageContext)?.language || 'ta';
@@ -100,7 +109,18 @@ export default function AddShishya() {
                     }
                 }
             });
-        }  
+        }
+        if (formState === FormState.GET_ADDRESS && newState === FormState.GET_IDENTITY) {
+            // Clear Data back to empty
+            setData(prevData => ({
+                ...prevData,
+                identity: emptyIdentityData,
+                details: emptyBasicData,
+                addresses: [emptyCurrentAddressData, emptyAddressData],
+                family_members: [emptyFamilyMemberData],
+                preferences: emptyPreferencesData
+            }));
+        }
         setFormState(newState);
         setErrors({});
     };
@@ -114,6 +134,21 @@ export default function AddShishya() {
     }
 
     const updateAddressData = (updatedData: AddressDataType[]) => {
+        // Check if the address ID got changed to "" (indicating a new address)
+        // If yes, set all the same_address indicators in family details to false
+        const currentAddressId = data.addresses[0].address_id;
+        const newAddressId = updatedData[0].address_id;
+        if (currentAddressId !== "" && newAddressId === "") {
+            data.family_members.map((member, index) => {
+                if (index !== 0) { // Skip the first member as it is the shishya themselves
+                    member.same_address = false;
+                    setData(prevData => ({
+                        ...prevData,
+                        family_members: data.family_members
+                    }));
+                }
+            })
+        }
         setData(prevData => ({
             ...prevData,
             addresses: updatedData
@@ -139,6 +174,33 @@ export default function AddShishya() {
             ...prevData,
             preferences: updatedData
         }));
+    }
+
+    const postDataToDb = async () => {
+        const response = await invokeApi('shishya','POST', {
+            body: data
+        });
+        if (!response.success) {
+            const errorMsg = response.error ? response.error.message : 'Unknown error occurred';
+            setErrors({ general: errorMsg });
+            setFormState(FormState.GET_CONFIRMATION); // Stay in the same state
+            return;
+        }
+        // On success, reset the data to empty and go to GET_IDENTITY state
+        // Perhaps: Show Success Message for 2 seconds?
+        setResultMessage(response.data as unknown as ShishyaDataResultType);
+    }
+
+    const resetForm = () => {
+        setData({
+            identity: emptyIdentityData,
+            details: emptyBasicData,
+            addresses: [emptyCurrentAddressData, emptyAddressData],
+            family_members: [emptyFamilyMemberData],
+            preferences: emptyPreferencesData
+        });
+        setFormState(FormState.GET_IDENTITY);
+        setErrors({});
     }
 
     return(
@@ -197,8 +259,17 @@ export default function AddShishya() {
                 <GetConfirmation 
                     setParentState={handleStateChange}
                     currentData={data}
-                    updateParent={() => {}}
+                    updateParent={postDataToDb}
                     displayErrors={setErrors}
+                />
+                }
+
+                {(formState === FormState.GET_COMPLETION) &&
+                <ShowCompletion 
+                    setParentState={resetForm}
+                    currentData={resultMessage}
+                    updateParent={() => {}}
+                    displayErrors={() => {}}
                 />
                 }
 

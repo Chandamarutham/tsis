@@ -29,6 +29,7 @@ export const emptyBasicData: BasicDataType = {
 };
 
 export const emptyAddressData: AddressDataType = {
+    address_id: '',
     country_name: '',
     postal_code: '',
     state_name: '',
@@ -42,6 +43,7 @@ export const emptyAddressData: AddressDataType = {
 };
 
 export const emptyCurrentAddressData: AddressDataType = {
+    address_id: '',
     country_name: '',
     postal_code: '',
     state_name: '',

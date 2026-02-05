@@ -20,8 +20,9 @@ import participation from '@constants/participation.json';
 
 import styles from '@styles/GetConfirmation.module.css';
 
+
 export default function GetConfirmation(
-    {setParentState, currentData}: FormProps<ShishyaDataType>
+    {setParentState, currentData, updateParent}: FormProps<ShishyaDataType>
 ) {
     const language: 'en' | 'ta'  = useContext(LanguageContext)?.language || 'ta';
     const font_style: string = language === "ta" ? "font-tamil" : "font-english";
@@ -107,7 +108,8 @@ export default function GetConfirmation(
         
         if (result) {
             // On confirmation, submit data
-            alert("You have submitted the Shishya information successfully! {yet to be implemented}");
+            setParentState(FormState.GET_COMPLETION);
+            updateParent(currentData);
         }
     }
 

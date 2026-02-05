@@ -22,6 +22,14 @@
         {
             "en": "Submission",
             "ta": "சமர்ப்பித்தல்"
+        },
+        {
+            "en": "Confirmation",
+            "ta": "உறுதிப்படுத்தல்"
+        },
+        {
+            "en": "Completion",
+            "ta": "நிறைவு"
         }
     ]
 }

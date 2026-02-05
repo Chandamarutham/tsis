@@ -77,6 +77,21 @@
   @apply border-error-text focus:border-2 focus:bg-primary focus:shadow;
 }
 
+
+.lockBox {
+    @apply flex bg-gray-200 justify-center items-center mb-4 gap-x-2 mt-2;
+}
+
+.lockButton {
+    @apply flex;
+    @apply bg-transparent text-secondary-light p-0 m-0 rounded-md;
+    @apply text-center justify-center hover:border-0 hover:scale-110 active:border-0;
+}
+
+.lockIcon {
+    @apply text-small p-0 m-0 ;
+}
+
 .prevButton,
 .nextButton {
   @apply w-full  mt-4 py-2 px-4;

@@ -1,6 +1,10 @@
 import { useState, useContext, useEffect } from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLock } from '@fortawesome/free-solid-svg-icons';
+
 import { LanguageContext } from '@utils/languageContext';
+import { useConfirm } from '@utils/useConfirm';
 import { FormState } from '@typedef/FormState';
 import { GetPostOfficeData } from '@utils/getPostofficeData';
 
@@ -8,7 +12,7 @@ import type { FormErrors } from '@typedef/FormErrors';
 import type { FormProps, AddressDataType } from '@typedef/ShishyaData';
 import type { IndiaPostOffice } from '@typedef/PostOfficeData';
 
-import { emptyAddressData } from '@constants/emptyShishyaData';
+import { emptyAddressData, emptyCurrentAddressData } from '@constants/emptyShishyaData';
 
 import country from '@constants/country_prefix.json';
 
@@ -21,6 +25,7 @@ export default function GetAddresses(
     const [errors, setErrors] = useState<FormErrors>({});
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [postOffices, setPostOffices] = useState<IndiaPostOffice[]>([]);
+    const confirm = useConfirm();
 
     const language: 'en' | 'ta'  = useContext(LanguageContext)?.language || 'ta';
     const font_style: string = language === "ta" ? "font-tamil" : "font-english";
@@ -31,6 +36,7 @@ export default function GetAddresses(
 
     const currentAddress: AddressDataType | undefined = currentData.find(address => address.current_address === true);
     const paddr_idx: number = currentData.findIndex(address => address.current_address === false);
+    const addressLocked: boolean = currentData[0].address_id !== '';
 
     // Initialize postOffices when component mounts or currentData changes
     useEffect(() => {
@@ -240,11 +246,14 @@ export default function GetAddresses(
                 
         if (field === "country_name") { // If country_code is changed
             // Whenever country is changed, clear postal code and other fields
+            console.log('Country changed, resetting dependent fields.');
+            console.log('New Country:', e.target.value);
             newAddresses[index] = { 
                 ...emptyAddressData, 
                 current_address: newAddresses[index].current_address, 
-                [field]: e.target.value 
+                country_name: e.target.value 
             };
+            console.log('Updated Address:', newAddresses[index]);
         } else if (field === "postal_code") { // If postal_code is changed
             let postal_code = e.target.value;
             if (newAddresses[index].country_name === "India") {
@@ -283,9 +292,69 @@ export default function GetAddresses(
         updateParent(newAddresses);
     };
 
+    // Handle Unlock Address
+    const handleUnlockAddress = async  () => {
+        const result = await confirm({
+            title: {
+                "en": "Unlock Address",
+                "ta": "முகவரியை திறக்கவும்"
+            }[language],
+            description: {
+                "en": "Others registered with this address will not be affected. This change will happen only for you. Are you sure you want to change the address?",
+                "ta": "உங்களைத் தவிர, இந்த முகவரியில் பதியப்பட்டிருக்கும் வேறொருவருக்கும் முகவரி மாறாது - உங்களுடைய முகவரி மட்டுமே மாறும். முகவரியை மாற்ற விரும்புகிறீர்களா? "
+            }[language],
+            confirmBtnTitle: {
+                "en": "Yes",
+                "ta": "ஆம்"
+            }[language],
+            rejectBtnTitle: {
+                "en": "No",
+                "ta": "இல்லை"
+            }[language]
+        });
+        if (result === true) {
+            const newAddresses: AddressDataType[] = currentData.map(addr => ({ ...addr }));
+            newAddresses[0] = {
+                ...emptyCurrentAddressData,
+            };
+            newAddresses[1] = {
+                ...emptyAddressData,
+                current_address: false,
+                current_is_permanent: false
+            };
+            updateParent(newAddresses);
+        } else {
+            // User cancelled the unlock action, do nothing
+        }
+    }
+
     // Handle Back Button
-    const handlePrev = () => {
-        setParentState(FormState.GET_IDENTITY);
+    const handlePrev = async () => {
+        const response: boolean  = await confirm({
+            title: {
+                "en": "Confirm Action",
+                "ta": "செயலை உறுதிப்படுத்தவும்"
+            }[language],
+            description: {
+                "en": "Going back will discard all changes. Do you want to proceed?",
+                "ta": "முந்தைய பக்கம் சென்றால் இதுவரை செய்த மாற்றங்கள் நீங்கிவிடும். பரவாயில்லையா?"
+            }[language],
+            confirmBtnTitle: {
+                "en": "Yes",
+                "ta": "ஆம்"
+            }[language],
+            rejectBtnTitle: {
+                "en": "No",
+                "ta": "இல்லை"
+            }[language]
+        });
+        if (response === true) {
+            resetControllingStates();
+
+            setParentState(FormState.GET_IDENTITY);
+        } else  {
+            // Handle cancellation if needed
+        }
     };
 
     // Handle Form Submission
@@ -304,6 +373,27 @@ export default function GetAddresses(
 
     return(
         <form className={styles.formContainer} onSubmit={handleNext} noValidate>
+
+            {/* Address Lock Opening */}
+            {addressLocked  && (
+                <div className={styles.lockBox}>
+                    <p className='text-secondary-light text-small'>
+                        {{
+                            "en": "To change the addresses, click this→", 
+                            "ta": "முகவரிகளை மாற்ற இதனை அழுத்தவும் →"
+                        }[language]}
+                    </p>
+                    <button 
+                        type="button" 
+                        onClick={handleUnlockAddress} 
+                        title="unlock addresses for editing"
+                        className={styles.lockButton}
+                    >
+                        <FontAwesomeIcon icon={faLock} className={styles.lockIcon}/>
+                    </button>
+
+                </div>
+            )}
             {/* Display the addresses - current first and then the permanent */}
             {currentData.map((address, index) => (
                 <div key={`${address.current_address ? "current" : "permanent"}`}>
@@ -323,6 +413,7 @@ export default function GetAddresses(
                                 checked={address.current_is_permanent}
                                 onChange={copyCurrentToPermanent}
                                 className={styles.checkboxField}
+                                disabled={addressLocked}
                                 aria-label={{'en': 'Same as Current Address', 'ta': 'தற்போதைய முகவரியே'}[language]}
                             />
                             <label
@@ -356,7 +447,7 @@ export default function GetAddresses(
                                 value={address.country_name}
                                 autoComplete='country-name'
                                 onChange={(e) => handleAddressChange(e, index, 'country_name')}
-                                disabled={index === paddr_idx && currentData[paddr_idx].current_is_permanent}
+                                disabled={index === paddr_idx && currentData[paddr_idx].current_is_permanent || addressLocked}
                             >
                                 <option value="">
                                     {{'en': 'Select', 'ta': 'தேர்ந்தெடு'}[language]}
@@ -388,7 +479,7 @@ export default function GetAddresses(
                                     ${width4_limit} 
                                     ${errors[`postal_code_${index}`] ? styles.inputError : ''}
                                 `}
-                                disabled={index === paddr_idx && currentData[paddr_idx].current_is_permanent}
+                                disabled={index === paddr_idx && currentData[paddr_idx].current_is_permanent || addressLocked}
                                 autoComplete='postal-code'
                             />
                        </div>
@@ -408,7 +499,9 @@ export default function GetAddresses(
                                 disabled={
                                     address.country_name === "India" 
                                     || (index === paddr_idx 
-                                        && currentData[paddr_idx].current_is_permanent)}
+                                        && currentData[paddr_idx].current_is_permanent)
+                                    || addressLocked
+                                }
                                 value={address.state_name}
                                 onChange={(e) => handleAddressChange(e, index, "state_name")}
                                 className={`
@@ -433,7 +526,9 @@ export default function GetAddresses(
                                 name={`district_name_${index}`}
                                 disabled={address.country_name === "India" 
                                     || (index === paddr_idx 
-                                        && currentData[paddr_idx].current_is_permanent)}
+                                        && currentData[paddr_idx].current_is_permanent)
+                                    || addressLocked
+                                }
                                 value={address.district_name}
                                 onChange={(e) => handleAddressChange(e, index, "district_name")}
                                 className={`
@@ -463,7 +558,9 @@ export default function GetAddresses(
                                     ${styles.width6_limit} 
                                     ${width4_limit}`}
                                 disabled={index === paddr_idx 
-                                    && currentData[paddr_idx].current_is_permanent}
+                                    && currentData[paddr_idx].current_is_permanent
+                                    || addressLocked
+                                }
                             />
                         </div>
 
@@ -483,7 +580,9 @@ export default function GetAddresses(
                                 onChange={(e) => handleAddressChange(e, index, "street_name")}
                                 className={`${styles.inputField} ${width4_limit}`}
                                 disabled={index === paddr_idx 
-                                    && currentData[paddr_idx].current_is_permanent}
+                                    && currentData[paddr_idx].current_is_permanent
+                                    || addressLocked
+                                }
                             />
                         </div>
 
@@ -506,7 +605,9 @@ export default function GetAddresses(
                                 onChange={(e) => handleAddressChange(e, index, "door_no")}
                                 className={`${styles.inputField} ${width4_limit}`}
                                 disabled={index === paddr_idx 
-                                    && currentData[paddr_idx].current_is_permanent}
+                                    && currentData[paddr_idx].current_is_permanent
+                                    || addressLocked
+                                }
                             />
                         </div>
 
@@ -538,6 +639,7 @@ export default function GetAddresses(
                                     disabled={index === paddr_idx 
                                         && currentData[paddr_idx].current_is_permanent 
                                         || postOffices.length === 0
+                                        || addressLocked
                                     }
                                 >
                                     <option value="">Select</option>
@@ -548,6 +650,7 @@ export default function GetAddresses(
                                             disabled={index === paddr_idx 
                                                 && currentData[paddr_idx].current_is_permanent
                                                 || postOffices.length === 0
+                                                || addressLocked
                                             }
                                         >
                                             {office.officename}
@@ -578,7 +681,9 @@ export default function GetAddresses(
                                     ${errors[`area_name_${index}`] ? styles.inputError : ''}
                                 `}
                                 disabled={index === paddr_idx 
-                                    && currentData[paddr_idx].current_is_permanent}
+                                    && currentData[paddr_idx].current_is_permanent
+                                    || addressLocked
+                                }
                             />
                         </div>
                         )}

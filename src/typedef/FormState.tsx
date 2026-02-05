@@ -4,6 +4,7 @@ export const FormState = {
   GET_BASICS: 2,
   GET_FAMILY: 3,
   GET_PREFERENCES: 4,
-  GET_CONFIRMATION: 5
+  GET_CONFIRMATION: 5,
+  GET_COMPLETION: 6
 } as const;
 export type FormState = typeof FormState[keyof typeof FormState];

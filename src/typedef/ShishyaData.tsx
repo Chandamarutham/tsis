@@ -27,6 +27,7 @@ export type BasicDataType = {
 
 // Data type used in Address Information Form
 export type AddressDataType = {
+    address_id?: string;
     country_name: string;
     postal_code: string;
     state_name: string;
@@ -66,6 +67,13 @@ export interface ShishyaDataType {
     preferences: PreferencesType;
 }
 
+export type ShishyaDataResultType = {
+    count: number;
+    message: string;
+    current_address_id: string;
+    permanent_address_id: string;
+    family_id: string;
+}
 
 // An extendable common interface for Form Props
 // Usage: interface SpecificFormProps extends FormProps<SpecificDataType> {}

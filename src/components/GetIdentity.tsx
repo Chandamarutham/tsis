@@ -22,6 +22,7 @@ export default function GetIdentity({
         value: callingCode
     }));
     const fullPhoneNumber = `${currentData.country_code}${currentData.phone_number.replace(/^\+\d+\s?/, '')}`;
+    
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         updateParent({
