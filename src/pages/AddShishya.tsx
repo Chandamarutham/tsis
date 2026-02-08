@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, /* useEffect, */ useContext } from 'react';
 
 import { LanguageContext } from '@utils/languageContext';
 import { invokeApi } from '@utils/api';
@@ -64,51 +64,46 @@ export default function AddShishya() {
     /* --------------------------------
     UseEffect Section - for debug only
     --------------------------------- */
-    useEffect(() => {
+/*     useEffect(() => {
         console.log('Current Data:', data);
-    }, [data]);
+    }, [data]); */
 
 
     /* --------------------------------
     Handler Functions Section
     --------------------------------- */
-    const handleStateChange = (newState: FormState) => {
+    const handleStateChange = async (newState: FormState) => {
         // Handle transition specific backend logic here if needed
         if (formState === FormState.GET_IDENTITY && newState === FormState.GET_ADDRESS) {
             // Validate identity data with backend and fetch details as available
-            invokeApi('shishya','GET', {
+            const response = await invokeApi('shishya','GET', {
                     queryParams: {
                         shishya_name: data.identity.shishya_name,
                         phone_number: data.identity.phone_number,
                         country_code: data.identity.country_code
-            }}).then((response) => {
-                if (response.success && response.data) {
-                    const fetchedData = response.data as unknown as ShishyaDataType;
-                    if(fetchedData !== null) {
-                        // Populate data with fetched details
-                        setData(prevData => ({
-                            ...prevData,
-                            identity: fetchedData.identity || prevData.identity,
-                            details: fetchedData.details || prevData.details,
-                            addresses: fetchedData.addresses?.length > 0 
-                                ? fetchedData.addresses 
-                                : prevData.addresses,
-                            family_members: fetchedData.family_members?.length > 0 
-                                ? fetchedData.family_members 
-                                : prevData.family_members,
-                            preferences: fetchedData.preferences || prevData.preferences
-                        
-                        }));
-                 }
-                } else if (response.error) {
-                    console.error('Error fetching Shishya data:', response.error);
-                    if (response.error.code === 'RECORD_LOCKED') {
-                        setErrors({ general: response.error.message });
-                        setFormState(formState); // Stay in the same state
-                        return;
-                    }
+            }});
+            if (response.success && response.data) {
+                const fetchedData = response.data as unknown as ShishyaDataType;
+                if (fetchedData !== null) {
+                    // Populate data with fetched details
+                    setData(prevData => ({
+                        ...prevData,
+                        identity: fetchedData.identity || prevData.identity,
+                        details: fetchedData.details || prevData.details,
+                        addresses: fetchedData.addresses?.length > 0 
+                            ? fetchedData.addresses 
+                            : prevData.addresses,
+                        family_members: fetchedData.family_members?.length > 0 
+                            ? fetchedData.family_members 
+                            : prevData.family_members,
+                        preferences: fetchedData.preferences || prevData.preferences
+                    }));
                 }
-            });
+            } else if (response.error) {
+                console.error('Error fetching Shishya data:', response.error);
+                setErrors({ general: response.error.message });
+                return; // Stay in the same state
+            }
         }
         if (formState === FormState.GET_ADDRESS && newState === FormState.GET_IDENTITY) {
             // Clear Data back to empty

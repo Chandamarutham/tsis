@@ -27,7 +27,7 @@ export type BasicDataType = {
 
 // Data type used in Address Information Form
 export type AddressDataType = {
-    address_id?: string;
+    address_id: string;
     country_name: string;
     postal_code: string;
     state_name: string;

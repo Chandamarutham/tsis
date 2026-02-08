@@ -1,3 +1,5 @@
+import { getSignedFetch } from '@utils/signedFetch';
+
 type JsonValue = string | number | boolean | null;
 interface JsonObject {
     [key: string]: JsonValue | JsonObject;
@@ -52,8 +54,8 @@ export async function invokeApi<TReq = JsonObject, TRes = JsonObject>(
     }
 
     try {
-        const response = await fetch(fetchUrl.toString(), options);
-        
+        const signedFetch = getSignedFetch();
+        const response = await signedFetch(fetchUrl.toString(), options);
         if (!response.ok) {
             if (response.status === 403) {
                 return {

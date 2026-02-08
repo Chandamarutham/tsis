@@ -1,13 +1,19 @@
 {
 	"folders": [
 		{
-			"path": "../database"
+			"name": "tsis",
+			"path": "."
 		},
 		{
+			"name": "ec2_python",
 			"path": "../ec2_python"
 		},
 		{
-			"path": "."
+			"name": "database",
+			"path": "../database"
+		},
+		{
+			"path": "../tsis_aws"
 		}
 	],
 	"settings": {

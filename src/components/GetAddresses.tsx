@@ -253,7 +253,6 @@ export default function GetAddresses(
                 current_address: newAddresses[index].current_address, 
                 country_name: e.target.value 
             };
-            console.log('Updated Address:', newAddresses[index]);
         } else if (field === "postal_code") { // If postal_code is changed
             let postal_code = e.target.value;
             if (newAddresses[index].country_name === "India") {
