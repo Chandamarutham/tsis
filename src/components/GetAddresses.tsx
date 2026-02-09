@@ -246,8 +246,7 @@ export default function GetAddresses(
                 
         if (field === "country_name") { // If country_code is changed
             // Whenever country is changed, clear postal code and other fields
-            console.log('Country changed, resetting dependent fields.');
-            console.log('New Country:', e.target.value);
+
             newAddresses[index] = { 
                 ...emptyAddressData, 
                 current_address: newAddresses[index].current_address, 

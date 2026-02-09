@@ -65,6 +65,7 @@
 .phoneInput,
 .countryCodeSelect,
 .phoneGroup {
+  @apply text-normal!;
   @apply w-full bg-secondary-dark rounded-lg;
   @apply text-small transition-all duration-200 ease-in-out;
   @apply md:text-medium

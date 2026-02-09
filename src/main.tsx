@@ -9,6 +9,13 @@ import App from './App.tsx';
 
 await initSignedFetch();
 
+const params = new URLSearchParams(window.location.search);
+const redirect = params.get("__redirect__");
+
+if (redirect) {
+  window.history.replaceState(null, "", redirect);
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>

@@ -1,5 +1,7 @@
 @theme {
   /*  Primary and secondary colours */
+  --color-normal: rgba(0, 0, 0, 1);
+  --color-background: rgba(255, 255, 255, 1);
   --color-primary: rgba(255, 255, 255, 1);
   --color-primary-light: rgba(255, 255, 127, 0.6);
   --color-primary-dark: rgba(53, 47, 156, 1);
@@ -26,8 +28,9 @@
   --color-success-text: rgba(15, 240, 15, 1);
 
   /* Fonts used and sizes */
-  --font-tamil: "Mukta Malar", sans-serif;
-  --font-devanagri: "Mukta", sans-serif;
+  --font-tamil:
+    "Noto Sans Tamil", "Mukta Malar", system-ui, -apple-system, sans-serif;
+  --font-devanagri: "Mukta", system-ui, -apple-system, sans-serif;
   --font-english: system-ui, sans-serif;
 
   --text-small: 0.75rem;

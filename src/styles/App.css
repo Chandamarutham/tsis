@@ -2,7 +2,7 @@
 @import "@styles/theme.css";
 
 #root {
-  @apply min-h-screen w-full;
+  @apply min-h-screen w-full text-normal bg-background font-english;
 }
 
 main {

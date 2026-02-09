@@ -41,13 +41,21 @@ export default function GetIdentity({
         // Perform validation inline - not a big form, so keeping it simple
         const newErrors: FormErrors = {};
         if(!currentData.shishya_name.trim()) {
-            newErrors.shishya_name = "Name is required"; // Replace with localized error
+            newErrors.shishya_name = {
+                "en": "Name is required!",
+                "ta": "பெயர் குறிப்பிடப்பட வேண்டும்!"
+            }[language];
         }
         if(!currentData.phone_number.trim()) {
-            newErrors.phone_number = "Phone number is required"; // Replace with localized error
-        }
-        if (!/^\+(?:[0-9] ?){6,14}[0-9]$/.test(fullPhoneNumber)) {
-            newErrors.phone_number = "Invalid phone number format"; // Replace with localized error
+            newErrors.phone_number = {
+                "en": "Phone number is required!",
+                "ta": "தொலைபேசி எண் குறிப்பிடப்பட வேண்டும்!"
+            }[language];
+        } else if (!/^\+(?:[0-9] ?){6,14}[0-9]$/.test(fullPhoneNumber)) {
+            newErrors.phone_number = {
+                "en": "Invalid phone number format!",
+                "ta": "தொலைபேசி எண் தவறானக உள்ளது!"
+            }[language];
         }
 
         if(Object.keys(newErrors).length > 0) {
@@ -59,6 +67,7 @@ export default function GetIdentity({
 
         // If validation passes, update parent and move to next state
         updateParent(currentData);
+        setIsSubmitting(false);
         setParentState(FormState.GET_ADDRESS); // Assuming 1 is the next state
     };
 

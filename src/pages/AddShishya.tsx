@@ -100,8 +100,17 @@ export default function AddShishya() {
                     }));
                 }
             } else if (response.error) {
-                console.error('Error fetching Shishya data:', response.error);
                 setErrors({ general: response.error.message });
+                // Clear Data back to empty
+                setData(prevData => ({
+                    ...prevData,
+                    identity: emptyIdentityData,
+                    details: emptyBasicData,
+                    addresses: [emptyCurrentAddressData, emptyAddressData],
+                    family_members: [emptyFamilyMemberData],
+                    preferences: emptyPreferencesData
+                }));
+                setFormState(FormState.GET_IDENTITY);
                 return; // Stay in the same state
             }
         }

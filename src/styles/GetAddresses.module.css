@@ -52,6 +52,7 @@
 
 .selectField,
 .inputField {
+    @apply text-normal!;
     @apply w-full bg-secondary-dark rounded-lg px-1;
     @apply text-small transition-all duration-200 ease-in-out;
     @apply border border-input-border rounded-lg h-8;
@@ -109,3 +110,4 @@
 .buttonDisabled {
   @apply bg-gray-400 cursor-not-allowed;
 }
+

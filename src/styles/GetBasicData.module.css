@@ -39,6 +39,7 @@
 
 .selectField,
 .inputField {
+  @apply text-normal!;
   @apply w-full bg-secondary-dark rounded-lg;
   @apply text-small transition-all duration-200 ease-in-out px-1;
   @apply border border-input-border rounded-lg h-8;
