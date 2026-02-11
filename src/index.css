@@ -1,11 +1,92 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  /* Fonts */
+  --font-tamil:
+    "Noto Sans Tamil", "Mukta Malar", system-ui, -apple-system, sans-serif;
+  --font-devanagri: "Mukta", system-ui, -apple-system, sans-serif;
+  --font-english: system-ui, -apple-system, sans-serif;
+
+  /* Text Colours */
+  --normal-color: rgba(0, 0, 0, 1);
+  --reverse-color: rgba(255, 255, 255, 1);
+  --inactive-color: rgba(200, 200, 200, 0.5);
+  --link-color: rgba(100, 108, 255, 1);
+  --reverse-link-color: rgba(83, 91, 242, 1);
+  --error-color: rgba(240, 15, 15, 1);
+  --success-color: rgba(15, 240, 15, 1);
+  --placeholder-color: rgba(159, 159, 159, 1);
+
+  /* bg Colors */
+  --normal-bg: rgba(255, 255, 255, 1);
+  --reverse-bg: rgba(0, 0, 0, 1);
+  --error-bg: rgba(255, 127, 127, 0.5);
+  --success-bg: rgba(127, 255, 127, 0.2);
+  --major-brand-bg: rgba(53, 47, 156, 1);
+  --default-brand-bg: rgba(224, 231, 255, 0.6);
+  --minor-brand-bg: rgba(255, 255, 127, 0.6);
+
+  /* Form specific colours */
+  --form-bg: rgba(249, 250, 251, 1);
+  --button-bg: var(--major-brand-bg);
+  --cancel-btn-bg: var(--default-brand-bg);
+  --button-hover-bg: var(--reverse-link-color);
+  --inactive-btn-bg: var(--inactive-color);
+
+  /* Border and focus colours */
+  --input-border: rgba(209, 213, 219, 1);
+  --focus-border: rgba(59, 130, 246, 0.75);
+  --normal-border: {
+    border-color: var(--input-border);
+    box-shadow: none;
+  };
+  --focus-border: {
+    border-color: var(--focus-border);
+    box-shadow: 0 0 0 4px var(--focus-border);
+  };
+  --no-border: {
+    border-style: transparent;
+    box-shadow: none;
+  };
+
+  /* Font sizes */
+  --text-small: {
+    font-size: 0.75rem;
+  };
+  --text-medium: {
+    font-size: 0.875rem;
+  };
+  --text-regular: {
+    font-size: 1rem;
+  };
+  --text-subtitle: {
+    font-size: 1.25rem;
+  };
+  --text-title: {
+    font-size: 1.875rem;
+  };
+  --text-headline: {
+    font-size: 3rem;
+  };
+
+  /* Font thickness */
+  --font-thin: {
+    font-weight: 300;
+  };
+  --font-regular: {
+    font-weight: 400;
+  };
+  --font-semibold: {
+    font-weight: 600;
+  };
+  --font-bold: {
+    font-weight: 700;
+  };
+
+  font-weight: var(--font-regular);
+  color: var(--normal-color);
+  background-color: var(--normal-bg);
 
   color-scheme: light dark;
-  color: rgba(0, 0, 0, 1);
-  background-color: rgba(255,255,255,1);
+  line-height: 1.5;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -14,12 +95,12 @@
 }
 
 a {
-  font-weight: 500;
-  color: #646cff;
+  font-weight: var(--font-semibold);
+  color: var(--link-color);
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--reverse-link-color);
 }
 
 body {
@@ -31,14 +112,14 @@ body {
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: var(--text-headline);
   line-height: 1.1;
 }
 
 input,
 textarea,
 select {
-  color: #000;              /* or white if dark bg */
+  color: #000; /* or white if dark bg */
   -webkit-text-fill-color: #000; /* REQUIRED for Safari */
 }
 
@@ -46,10 +127,11 @@ button {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
+  font-size: var(--text-regular);
+  font-weight: var(--font-semibold);
   font-family: inherit;
-  background-color: #1a1a1a;
+  color: var(--reverse-color);
+  background-color: var(--button-bg);
   cursor: pointer;
   transition: border-color 0.25s;
 }

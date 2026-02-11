@@ -17,6 +17,9 @@
 		}
 	],
 	"settings": {
-		"postman.settings.dotenv-detection-notification-visibility": false
-	}
+		"postman.settings.dotenv-detection-notification-visibility": false,
+        "editor.detectIndentation": false,
+        "editor.tabSize": 4,
+        "editor.insertSpaces": true	
+    }
 }

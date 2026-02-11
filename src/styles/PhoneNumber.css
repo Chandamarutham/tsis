@@ -1,0 +1,115 @@
+.phn_fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.phn_legend {
+  font-weight: var(--font-semibold);
+  color: var(--normal-color);
+  font-size: var(--text-medium);
+  font-family: var(--english-font), var(--tamil-font);
+  margin: 0 0 0.35rem;
+  padding: 0;
+}
+
+.phn_group {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid
+    var(--input-border-color, var(--color-input-border, #d1d5db));
+  border-radius: 0.5rem;
+  background-color: var(--input-background, #ffffff);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.phn_group:focus-within {
+  border-color: var(--focus-border-color, #3b82f6);
+  box-shadow: 0 0 0 2px var(--focus-ring-color, rgba(59, 130, 246, 0.2));
+}
+
+.phn_countrySelect,
+.phn_phoneInput {
+  border: none;
+  outline: none;
+  background: transparent; /* Can cause trouble in Safari */
+  -webkit-text-fill-color: var(--normal-color); /* For Safari */
+  color: var(--normal-color);
+  font-size: var(--text-small);
+  padding: 0.5rem 0.75rem;
+  min-height: 2.5rem;
+  line-height: 1.2;
+}
+
+.phn_countrySelect {
+  flex: 0 0 auto;
+  appearance: none;
+  cursor: pointer;
+}
+
+.phn_countrySelect[data-code-length="2"] {
+  width: 7ch;
+}
+
+.phn_countrySelect[data-code-length="3"] {
+  width: 8ch;
+}
+
+.phn_countrySelect[data-code-length="4"] {
+  width: 9ch;
+}
+
+.phn_countrySelect[data-code-length="5"] {
+  width: 10ch;
+}
+
+.phn_countrySelect[data-code-length="6"] {
+  width: 11ch;
+}
+
+.phn_countrySelect option {
+  color: var(--normal-color);
+}
+
+.phn_phoneInput {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.phn_phoneInput::placeholder {
+  color: var(--placeholder-color);
+  opacity: 1;
+}
+
+.phn_fieldset:disabled .phn_group {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.phn_fieldset:disabled .phn_countrySelect,
+.phn_fieldset:disabled .phn_phoneInput {
+  cursor: not-allowed;
+}
+
+.phn_tamilFont {
+  font-family: var(--tamil-font);
+}
+
+.phn_englishFont {
+  font-family: var(--english-font);
+}
+
+@media (min-width: 768px) {
+  .phn_legend {
+    font-size: var(--text-regular);
+  }
+
+  .phn_countrySelect,
+  .phn_phoneInput {
+    font-size: var(--text-medium);
+  }
+}
