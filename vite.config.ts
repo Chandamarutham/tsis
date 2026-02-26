@@ -1,13 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(), 
-    tailwindcss()
   ],
   base: '/', // The GitHub repo name
   optimizeDeps: {
@@ -24,7 +22,7 @@ export default defineConfig({
       '@styles': path.resolve(__dirname, 'src/styles'),
       '@constants': path.resolve(__dirname, 'src/constants'),
       '@typedef': path.resolve(__dirname, 'src/typedef'),
-      '@elements': path.resolve(__dirname, 'src/elements')
+      '@blocks': path.resolve(__dirname, 'src/blocks')
     }
   }
 })

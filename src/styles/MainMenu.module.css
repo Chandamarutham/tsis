@@ -1,60 +1,132 @@
-@import "tailwindcss";
-@import "@styles/theme.css";
-
 .navbar {
-  @apply sticky mx-auto w-full top-0 z-50 border-b border-gray-200 bg-primary-light shadow-md;
-  position: -webkit-sticky; /* For Safari */
+    margin: 0;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: normal;
+    width: 100%;
+    top: 0;
+    position: sticky;
+    position: -webkit-sticky; /* For Safari */  z-index: 50;
+    border-bottom: 1px solid #e5e7eb;
+    background-color: var(--minor-brand-bg);
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .navList {
-  @apply flex list-none gap-4 justify-center items-center;
+    display: flex;
+    margin: 0;
+    padding: 0.5rem 0;
+    gap: 1rem;
+    list-style: none;
+    justify-content: center;
+    align-items: center;
 }
 
 .activeLink,
 .link {
-  @apply decoration-0 px-4 py-2 block cursor-pointer;
-  @apply text-primary-dark text-small;
-  @apply lg:text-regular lg:w-34;
-  @apply hover:text-focus;
+  text-decoration: none;
+  margin: 0;
+  padding:0.5rem;
+  display: block;
+  cursor: pointer;
+  color: var(--major-brand-bg);
+  font-size: var(--text-small);
+}
+
+@media (min-width: 1024px) {
+    .activeLink,
+    .link {
+        font-size: var(--text-regular);
+        width: 8.5rem;
+    }
+}
+
+.activeLink:hover,
+.link:hover {
+    color: var(--focus-border);
 }
 
 .dropdown {
-  @apply relative;
+    position: relative;
 }
 
 .dropdown:hover .dropdownMenu {
-  @apply block;
+    display: block;
 }
 
 .dropdownMenu {
-  @apply hidden absolute top-full left-0 bg-primary-light border border-primary-dark;
-  @apply shadow-md min-w-32 z-50 list-none m-0 p-0 opacity-100;
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: var(--minor-brand-bg);
+    border: 1px solid var(--major-brand-bg);
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    min-width: 8rem;
+    z-index: 50;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    opacity: 1;
 }
 
 .dropdownMenu li {
-  @apply border-b border-focus;
+    border-bottom: 1px solid var(--focus-border);
 }
 
 .dropdownMenu li:last-child {
-  @apply border-0;
+    border-bottom: 0;
 }
 
 .dropdownMenu .link,
 .dropdownMenu .activeLink {
-  @apply px-2 py-2 whitespace-nowrap;
-  @apply hover:bg-primary;
+    padding: 0.5rem;
+    white-space: nowrap;
+}
+
+.dropdownMenu .link:hover,
+.dropdownMenu .activeLink:hover {
+    background-color: var(--normal-bg);
 }
 
 .menuText {
-  @apply ml-2 hidden md:inline;
+    margin-left: 0.5rem;
+    display: none;
+}
+
+@media (min-width: 768px) {
+  .menuText {
+        display: inline;
+  }
 }
 
 .buttonContainer {
-  @apply flex items-center h-full;
+    display: flex;
+    align-items: center;
+    height: 100%;
 }
 
 .langButton {
-  @apply border-0 cursor-pointer bg-secondary w-16;
-  @apply text-small text-secondary-dark;
-  @apply px-1 py-1;
+    border: none;
+    height: 90%;
+    cursor: pointer;
+    background-color: #1c1c1c;
+    width: 4rem;
+    font-size: var(--text-small);
+    color: var(--reverse-color);
+    padding: 0.25rem;
+}
+
+.langButton:hover {
+    border: none;
+    background-color: #646cff;
+}
+
+.langButton:active {
+    border: none;
+    background-color: #1c1c1c;
 }

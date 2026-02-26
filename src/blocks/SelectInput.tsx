@@ -1,10 +1,8 @@
 import {
     useMemo,
-    useState,
     useContext
 } from 'react';
 
-import type { FormErrors } from '@typedef/FormErrors';
 import type {
     BlockProps,
     InputRange,
@@ -13,7 +11,7 @@ import type {
 
 import { LanguageContext } from '@utils/languageContext';
 
-import styles from '@styles/SelectInput.module.css';
+import styles from '@styles/blockStyles.module.css';
 
 type SelectOption = {
     label: string;
@@ -49,17 +47,14 @@ const buildRangeOptions = (min: number, max: number): SelectOption[] => {
 
 export default function SelectInput({
     legend,
+    value,
     onChange,
-    onError,
+    hasError,
     inputRange,
     disabled = false,
     required = false,
     className = '',
-    validate,
 }: BlockProps<number>) {
-    const [errors, setErrors] = useState<FormErrors>({});
-    const [selectedIndex, setSelectedIndex] = useState<number>(-1);
-
     const lang: 'en' | 'ta' = useContext(LanguageContext)?.language || 'ta';
 
     const options = useMemo(() => {
@@ -84,35 +79,15 @@ export default function SelectInput({
         });
     }, [inputRange, lang]);
 
-    const emitChange = (value: number) => {
-        if (validate) {
-            const nextErrors = validate(value);
-            setErrors(nextErrors);
-            onError(nextErrors);
-        } else {
-            setErrors({});
-            onError({});
-        }
-        onChange(value);
-    };
-
     const handleSelectChange = (
         event: React.ChangeEvent<HTMLSelectElement>
     ) => {
         const nextIndex = Number(event.target.value);
-        setSelectedIndex(nextIndex);
-
-        if (nextIndex === -1) {
-            emitChange(-1);
-            return;
-        }
-        emitChange(nextIndex);
+        onChange(Number.isNaN(nextIndex) ? -1 : nextIndex);
     };
 
-    const hasErrors = Object.keys(errors).length > 0;
-
-    const selectValue = selectedIndex >= 0 && selectedIndex < options.length
-        ? String(selectedIndex)
+    const selectValue = Number.isInteger(value) && value >= 0 && value < options.length
+        ? String(value)
         : '-1';
         
     const placeholderLabel = lang === 'ta' ? 'தேர்ந்தெடு' : 'Select';
@@ -120,29 +95,30 @@ export default function SelectInput({
     return (
         <fieldset
             className={`
-                ${styles.sel_fieldset}
+                ${styles.fieldset}
                 ${className}
             `}
             disabled={disabled}
         >
             <legend
                 className={`
-                    ${styles.sel_legend}
-                    ${lang === 'ta' ? styles.sel_tamilFont : styles.sel_englishFont}
+                    ${styles.legend}
+                    ${lang === 'ta' ? styles.fontTamil : styles.fontEnglish}
                 `}
             >
-                {legend} {required && <span className={styles.sel_required}>*</span>}
+                {legend} {required && <span className={styles.required}>*</span>}
             </legend>
 
             <div
                 className={`
-                    ${styles.sel_group}
-                    ${hasErrors ? styles.sel_error : ''}
+                    ${styles.group}
+                    ${hasError ? styles.error : ''}
                 `}
             >
                 <select
+                    name={`${legend.toLowerCase().replace(/\s+/g, '_')}`}
                     aria-label={legend}
-                    className={styles.sel_select}
+                    className={`${styles.field} ${styles.fieldControl}`}
                     value={selectValue}
                     onChange={handleSelectChange}
                     disabled={disabled}

@@ -1,43 +1,127 @@
-@import "tailwindcss";
-@import "@styles/theme.css";
-
 .header {
-  @apply w-full bg-primary-light font-tamil;
+  width: 100%;
+  background-color: var(--minor-brand-bg);
+  font-family: var(--font-tamil);
 }
 
 .banner {
-  @apply flex flex-row w-full bg-cover bg-center justify-center items-center font-tamil;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  background-size: cover;
+  justify-content: center;
+  align-items: center;
+  font-family: var(--font-tamil);
+  margin-block: 0;
 }
 
 .sidePanelContainer {
-  @apply shrink-0 flex flex-col mx-2 items-center justify-center h-full max-w-28;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  margin-left: 0.2rem;
+  margin-right: 0.2rem;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  max-width: 7rem;
+}
+
+@media (min-width: 768px) {
+  .sidePanelContainer {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    max-width: 10rem;
+  }
 }
 
 .sidePanelImage {
-  @apply h-20 w-20 rounded-full object-cover border bg-secondary;
-  @apply lg:h-24 lg:w-24;
+  height: 5rem;
+  width: 5rem;
+  border-radius: 9999px;
+  object-fit: cover;
+  border: 1px solid;
+  background-color: #1c1c1c;
+}
+
+@media (min-width: 768px) {
+  .sidePanelImage {
+    height: 5rem;
+    width: 5rem;
+  }
 }
 
 .acharyaName {
-  @apply font-tamil text-center text-small text-secondary;
+    padding: 0 0.5rem;
+  font-family: var(--font-tamil);
+  text-align: center;
+  font-size: var(--text-micro);
+  color: #1c1c1c;
+}
+
+@media (min-width: 768px) {
+  .acharyaName {
+    font-size: var(--text-small);
+  }
 }
 
 .mainPanel {
-  @apply flex-1 flex flex-col justify-center items-center px-4;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .preamble {
-  @apply text-small text-secondary font-tamil font-semibold leading-body;
+  font-size: var(--text-micro);
+  color: #1c1c1c;
+  font-family: var(--font-tamil);
+  margin: 0;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .preamble {
+    font-size: var(--text-small);
+  }
 }
 
 .thirumannImage {
-  @apply block max-w-48 object-cover;
+  display: block;
+  max-width: 9rem;
+  object-fit: cover;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+  .thirumannImage {
+    max-width: 12rem;
+  }
 }
 
 .titleContainer {
-  @apply flex flex-col w-full font-extrabold justify-center items-center bg-primary-dark;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--major-brand-bg);
 }
 
 .title {
-  @apply text-primary text-subtitle lg:text-title text-center;
+  color: var(--normal-bg);
+  font-size: var(--text-subtitle);
+  font-weight: 600;
+  text-align: center;
+  padding: 0.5rem 0;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .title {
+    font-size: var(--text-title);
+    font-weight: 800;
+  }
 }

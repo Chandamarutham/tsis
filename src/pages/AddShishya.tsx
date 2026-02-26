@@ -1,28 +1,24 @@
-import { useState, /* useEffect, */ useContext } from 'react';
+import { useState, useReducer, useMemo, useCallback, useContext, useEffect } from 'react';
 
 import { LanguageContext } from '@utils/languageContext';
 import { invokeApi } from '@utils/api';
+import { 
+    ShishyaDataContext, 
+    getStepIndex, 
+    stepOrder,
+    initialData,
+    type ShishyaAction
+} from '@utils/useShishyaData';
 import { FormState } from '@typedef/FormState';
 
 import type { FormErrors } from 'src/typedef/FormErrors';
-import type { 
-    IdentityDataType, 
-    BasicDataType, 
-    AddressDataType, 
-    FamilyMemberDataType, 
-    PreferencesType ,
+import type {
     ShishyaDataType,
     ShishyaDataResultType
 } from '@typedef/ShishyaData';
 
-import { 
-    emptyIdentityData, 
-    emptyBasicData, 
-    emptyAddressData, 
-    emptyCurrentAddressData, 
-    emptyFamilyMemberData ,
-    emptyPreferencesData
-} from '@constants/emptyShishyaData';
+import { errorMessages, type ErrorKey } from '@constants/errorMessages';
+import { titles } from '@constants/optionConstants';
 
 import GetIdentity from '@components/GetIdentity';
 import GetAddresses from '@components/GetAddresses';
@@ -32,22 +28,33 @@ import GetPreferences from '@components/GetPreferences';
 import GetConfirmation from '@components/GetConfirmation';
 import ShowCompletion from '@components/ShowCompletion';
 
-import titles from '@constants/title.json';
-
 import styles from '@styles/AddShishya.module.css'
 
-
+const formStateReducer = (state: FormState, action: ShishyaAction): FormState => {
+    switch (action.type) {
+        case 'nextStep': {
+            const currentIndex = getStepIndex(state);
+            const nextIndex = Math.min(currentIndex + 1, stepOrder.length - 1);
+            return stepOrder[nextIndex];
+        }
+        case 'prevStep': {
+            const currentIndex = getStepIndex(state);
+            const prevIndex = Math.max(currentIndex - 1, 0);
+            return stepOrder[prevIndex];
+        }
+        case 'resetForm':
+            return FormState.GET_IDENTITY;
+        case 'updateData':
+            // Data updates are handled by ShishyaDataContext, not form state
+            return state;
+        default:
+            return state;
+    }
+};
 
 export default function AddShishya() {
     const [errors, setErrors] = useState<FormErrors>({});
-    const [formState, setFormState] = useState<FormState>(FormState.GET_IDENTITY);
-    const [data, setData] = useState<ShishyaDataType>({
-        identity: emptyIdentityData,
-        details: emptyBasicData,
-        addresses: [emptyCurrentAddressData, emptyAddressData],
-        family_members: [emptyFamilyMemberData],
-        preferences: emptyPreferencesData
-    });
+    const [formState, dispatchFormState] = useReducer(formStateReducer, FormState.GET_IDENTITY);
     const [resultMessage, setResultMessage] = useState<ShishyaDataResultType>({
         count: 0,
         message: "",
@@ -57,9 +64,12 @@ export default function AddShishya() {
     });
 
     const language: 'en' | 'ta'  = useContext(LanguageContext)?.language || 'ta';
-    const state: number = formState as number;
+    const shishyaContext = useContext(ShishyaDataContext);
+    
+    const data = shishyaContext?.data;
+    const updateData = shishyaContext?.updateData;
+    const stepIndex: number = formState as number;
     const font_style: string = language === "ta" ? "font-tamil" : "font-english";
-
 
     /* --------------------------------
     UseEffect Section - for debug only
@@ -72,7 +82,13 @@ export default function AddShishya() {
     /* --------------------------------
     Handler Functions Section
     --------------------------------- */
-    const handleStateChange = async (newState: FormState) => {
+    const handleErrors = useCallback((newErrors: FormErrors) => {
+        setErrors(newErrors);
+    }, []);
+
+    const handleStateChange = useCallback(async (newState: FormState) => {
+        if (!data || !updateData) return;
+        
         // Handle transition specific backend logic here if needed
         if (formState === FormState.GET_IDENTITY && newState === FormState.GET_ADDRESS) {
             // Validate identity data with backend and fetch details as available
@@ -86,204 +102,165 @@ export default function AddShishya() {
                 const fetchedData = response.data as unknown as ShishyaDataType;
                 if (fetchedData !== null) {
                     // Populate data with fetched details
-                    setData(prevData => ({
-                        ...prevData,
-                        identity: fetchedData.identity || prevData.identity,
-                        details: fetchedData.details || prevData.details,
+                    updateData({
+                        identity: fetchedData.identity || data.identity,
+                        details: fetchedData.details || data.details,
                         addresses: fetchedData.addresses?.length > 0 
                             ? fetchedData.addresses 
-                            : prevData.addresses,
+                            : data.addresses,
                         family_members: fetchedData.family_members?.length > 0 
                             ? fetchedData.family_members 
-                            : prevData.family_members,
-                        preferences: fetchedData.preferences || prevData.preferences
-                    }));
+                            : data.family_members,
+                        preferences: fetchedData.preferences || data.preferences
+                    });
                 }
             } else if (response.error) {
                 setErrors({ general: response.error.message });
-                // Clear Data back to empty
-                setData(prevData => ({
-                    ...prevData,
-                    identity: emptyIdentityData,
-                    details: emptyBasicData,
-                    addresses: [emptyCurrentAddressData, emptyAddressData],
-                    family_members: [emptyFamilyMemberData],
-                    preferences: emptyPreferencesData
-                }));
-                setFormState(FormState.GET_IDENTITY);
+                dispatchFormState({ type: 'resetForm' });
                 return; // Stay in the same state
             }
         }
+        
+        // Handle going back from GET_ADDRESS to GET_IDENTITY - reset everything
         if (formState === FormState.GET_ADDRESS && newState === FormState.GET_IDENTITY) {
-            // Clear Data back to empty
-            setData(prevData => ({
-                ...prevData,
-                identity: emptyIdentityData,
-                details: emptyBasicData,
-                addresses: [emptyCurrentAddressData, emptyAddressData],
-                family_members: [emptyFamilyMemberData],
-                preferences: emptyPreferencesData
-            }));
-        }
-        setFormState(newState);
-        setErrors({});
-    };
-
-    // To be done independent of state transitions
-    const updateIdentityData = (newData: IdentityDataType) => {
-        setData(prevData => ({
-            ...prevData,
-            identity: newData
-        }));
-    }
-
-    const updateAddressData = (updatedData: AddressDataType[]) => {
-        // Check if the address ID got changed to "" (indicating a new address)
-        // If yes, set all the same_address indicators in family details to false
-        const currentAddressId = data.addresses[0].address_id;
-        const newAddressId = updatedData[0].address_id;
-        if (currentAddressId !== "" && newAddressId === "") {
-            data.family_members.map((member, index) => {
-                if (index !== 0) { // Skip the first member as it is the shishya themselves
-                    member.same_address = false;
-                    setData(prevData => ({
-                        ...prevData,
-                        family_members: data.family_members
-                    }));
-                }
-            })
-        }
-        setData(prevData => ({
-            ...prevData,
-            addresses: updatedData
-        }));
-    }
-
-    const updateBasicData = (updatedData: BasicDataType) => {
-        setData(prevData => ({
-            ...prevData,
-            details: updatedData
-        }));
-    }
-
-    const updateFamilyMembers = (updatedData: FamilyMemberDataType[]) => {
-        setData(prevData => ({
-            ...prevData,
-            family_members: updatedData
-        }));
-    }
-
-    const updatePreferences = (updatedData: PreferencesType) => {
-        setData(prevData => ({
-            ...prevData,
-            preferences: updatedData
-        }));
-    }
-
-    const postDataToDb = async () => {
-        const response = await invokeApi('shishya','POST', {
-            body: data
-        });
-        if (!response.success) {
-            const errorMsg = response.error ? response.error.message : 'Unknown error occurred';
-            setErrors({ general: errorMsg });
-            setFormState(FormState.GET_CONFIRMATION); // Stay in the same state
+            dispatchFormState({ type: 'resetForm' });
+            updateData(initialData);
+            setErrors({});
             return;
         }
-        // On success, reset the data to empty and go to GET_IDENTITY state
-        // Perhaps: Show Success Message for 2 seconds?
-        setResultMessage(response.data as unknown as ShishyaDataResultType);
-    }
-
-    const resetForm = () => {
-        setData({
-            identity: emptyIdentityData,
-            details: emptyBasicData,
-            addresses: [emptyCurrentAddressData, emptyAddressData],
-            family_members: [emptyFamilyMemberData],
-            preferences: emptyPreferencesData
-        });
-        setFormState(FormState.GET_IDENTITY);
+        
+        // Determine which action to dispatch based on state transition
+        const currentIndex = getStepIndex(formState);
+        const targetIndex = getStepIndex(newState);
+        
+        if (targetIndex === currentIndex) {
+            return; // No change needed
+        } else if (targetIndex === 0) {
+            dispatchFormState({ type: 'resetForm' });
+        } else if (targetIndex === currentIndex + 1) {
+            dispatchFormState({ type: 'nextStep' });
+        } else if (targetIndex === currentIndex - 1) {
+            dispatchFormState({ type: 'prevStep' });
+        }
+        
         setErrors({});
-    }
+    }, [formState, data, updateData]);
+
+    const resetForm = useCallback(() => {
+        dispatchFormState({ type: 'resetForm' });
+        setErrors({});
+    }, []);
+
+    // Handle API POST when transitioning to completion state
+    useEffect(() => {
+        if (formState === FormState.GET_COMPLETION && data) {
+            const performSubmit = async () => {
+                const response = await invokeApi('shishya','POST', {
+                    body: data
+                });
+                if (!response.success) {
+                    const errorMsg = response.error ? response.error.message : 'Unknown error occurred';
+                    setErrors({ general: errorMsg });
+                    return;
+                }
+                setResultMessage(response.data as unknown as ShishyaDataResultType);
+            };
+            performSubmit();
+        }
+    }, [formState, data]);
+
+    const stepTitle = useMemo(() => {
+        return titles[stepIndex][language];
+    }, [language, stepIndex]);
+
+    const stepContent = useMemo(() => {
+        if (!data) return null;
+        switch (formState) {
+            case FormState.GET_IDENTITY:
+                return (
+                    <GetIdentity 
+                        setParentState={handleStateChange}
+                        displayErrors={handleErrors}
+                    />
+                );
+            case FormState.GET_ADDRESS:
+                return (
+                    <GetAddresses 
+                        setParentState={handleStateChange}
+                        displayErrors={handleErrors}
+                    />
+                );
+            case FormState.GET_BASICS:
+                return (
+                    <GetBasicData 
+                        setParentState={handleStateChange}
+                        displayErrors={handleErrors}
+                    />
+                );
+            case FormState.GET_FAMILY:
+                return (
+                    <GetFamily 
+                        setParentState={handleStateChange}
+                        displayErrors={handleErrors}
+                    />
+                );
+            case FormState.GET_PREFERENCES:
+                return (
+                    <GetPreferences 
+                        setParentState={handleStateChange}
+                        displayErrors={handleErrors}
+                    />
+                );
+            case FormState.GET_CONFIRMATION:
+                return (
+                    <GetConfirmation 
+                        setParentState={handleStateChange}
+                        displayErrors={handleErrors}
+                    />
+                );
+            case FormState.GET_COMPLETION:
+                return (
+                    <ShowCompletion 
+                        setParentState={resetForm}
+                        currentData={resultMessage}
+                        updateParent={() => {}}
+                        displayErrors={() => {}}
+                    />
+                );
+            default:
+                return null;
+        }
+    }, [
+        data,
+        formState,
+        handleStateChange,
+        handleErrors,
+        resetForm,
+        resultMessage
+    ]);
 
     return(
         <div className={styles.masterContainer}>
-             <div className={styles.innerBox}>
+            <div className={styles.innerBox}>
                 <h1 className={`${styles.stateTitle} ${font_style}`}>
-                    {titles.name[state][language]}
+                    {stepTitle}
                 </h1>
 
-                {(formState === FormState.GET_IDENTITY) &&
-                    <GetIdentity 
-                        setParentState={handleStateChange}
-                        currentData={data.identity}
-                        updateParent={updateIdentityData}
-                        displayErrors={setErrors}
-                    />
-                }
+                {stepContent}
 
-                {(formState === FormState.GET_ADDRESS) &&
-                    <GetAddresses 
-                        setParentState={handleStateChange}
-                        currentData={data.addresses}
-                        updateParent={updateAddressData}
-                        displayErrors={setErrors}
-                    />
+                    {
+                    Object.keys(errors).length > 0 && 
+                    <span className={`${styles.error} ${font_style}`}>
+                        {(() => {
+                            const firstError = Object.values(errors)[0];
+                            if (!firstError) {
+                                return '';
+                            }
+                            return errorMessages[firstError as ErrorKey]?.[language] || firstError;
+                        })()}
+                    </span>
                 }
-
-                {(formState === FormState.GET_BASICS) &&
-                    <GetBasicData 
-                        setParentState={handleStateChange}
-                        currentData={data.details}
-                        updateParent={updateBasicData}
-                        displayErrors={setErrors}
-                    />
-                }
-
-                {(formState === FormState.GET_FAMILY) &&
-                    <GetFamily 
-                        setParentState={handleStateChange}
-                        currentData={data.family_members}
-                        updateParent={updateFamilyMembers}
-                        displayErrors={setErrors}
-                    />
-                }
-
-                {(formState === FormState.GET_PREFERENCES) &&
-                    <GetPreferences 
-                        setParentState={handleStateChange}
-                        currentData={data.preferences}
-                        updateParent={updatePreferences}
-                        displayErrors={setErrors}
-                    />
-                }
-
-                {(formState === FormState.GET_CONFIRMATION) &&
-                <GetConfirmation 
-                    setParentState={handleStateChange}
-                    currentData={data}
-                    updateParent={postDataToDb}
-                    displayErrors={setErrors}
-                />
-                }
-
-                {(formState === FormState.GET_COMPLETION) &&
-                <ShowCompletion 
-                    setParentState={resetForm}
-                    currentData={resultMessage}
-                    updateParent={() => {}}
-                    displayErrors={() => {}}
-                />
-                }
-
-                {
-                Object.keys(errors).length > 0 && 
-                <span className={`${styles.error} ${font_style}`}>
-                    {Object.values(errors)[0]}
-                </span>
-            }
-             </div>
+            </div>
         </div>
     );
 }

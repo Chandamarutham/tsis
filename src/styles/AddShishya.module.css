@@ -1,22 +1,58 @@
-@import "tailwindcss";
-@import "@styles/theme.css";
-
 .masterContainer {
-  @apply max-w-5xl flex flex-col bg-formbox rounded-lg shadow-lg;
-  @apply mt-8 mx-auto px-4 items-center;
+    max-width: 64rem;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--default-brand-bg);
+    border-radius: 0.5rem;
+    box-shadow:
+        0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    margin-top: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    align-items: center;
 }
 
 .innerBox {
-  @apply w-full m-4 p-2 bg-white rounded-b-lg shadow-md;
+    width: 100%;
+    margin: 1rem;
+    padding: 0.5rem;
+    background-color: var(--normal-bg);
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .stateTitle {
-  @apply text-regular font-semibold text-primary-dark text-center;
-  @apply md:text-subtitle md:font-semibold;
-  @apply lg:text-title lg:font-bold;
+    font-size: var(--text-subtitle);
+    font-weight: var(--font-semibold);
+    color: var(--major-brand-bg);
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+  .stateTitle {
+    font-size: var(--text-subtitle);
+    font-weight: var(--font-semibold);
+  }
+}
+
+@media (min-width: 1024px) {
+  .stateTitle {
+    font-size: var(--text-title);
+    font-weight: var(--font-bold);
+  }
 }
 
 .error {
-  @apply block text-error-text text-sm mt-1 font-english text-center;
+    display: block;
+    color: var(--error-color);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    font-family: var(--font-english);
+    text-align: center;
 }
-

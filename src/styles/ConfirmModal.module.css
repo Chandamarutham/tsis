@@ -1,30 +1,78 @@
-@import "tailwindcss";
-@import "@styles/theme.css";
-
-.dialogWindow{
- @apply fixed inset-0 bg-black opacity-90 flex items-center justify-center z-50;
+.dialogWindow {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
 }
 
 .form {
-    @apply bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4;
+  background-color: var(--normal-bg);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 28rem;
+  width: 100%;
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
 .title {
-    @apply text-subtitle font-bold mb-4;
+  font-size: var(--text-subtitle);
+  font-weight: var(--font-bold);
+  margin-bottom: 1rem;
+  color: var(--normal-color);
 }
 
 .desc {
-    @apply mb-6 text-gray-700;
+  margin-bottom: 1.5rem;
+  color: rgba(55, 65, 81, 1);
 }
 
-.btnGroup{
-    @apply flex justify-end space-x-3;
+.btnGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
 }
 
 .btnReject {
-    @apply px-4 py-2 text-gray-600 border rounded hover:bg-gray-100;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  color: rgba(75, 85, 99, 1);
+  border: 1px solid var(--input-border);
+  border-radius: 0.375rem;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btnReject:hover {
+  background-color: rgba(243, 244, 246, 1);
 }
 
 .btnConfirm {
-    @apply px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  background-color: var(--error-color);
+  color: var(--normal-bg);
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: var(--font-semibold);
+}
+
+.btnConfirm:hover {
+  background-color: rgba(220, 38, 38, 1);
 }

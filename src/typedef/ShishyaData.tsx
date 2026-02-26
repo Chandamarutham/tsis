@@ -83,3 +83,8 @@ export interface FormProps<T> {
     updateParent: (data: T) => void;
     displayErrors: (errors: FormErrors) => void;
 }
+
+export interface NewFormProps {
+    setParentState: (newState: FormState) => void;
+    displayErrors: (newErrors: FormErrors) => void;
+};

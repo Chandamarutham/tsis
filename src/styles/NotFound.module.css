@@ -1,24 +1,58 @@
-@import "tailwindcss";
-@import "@styles/theme.css";
-
 .container {
-  @apply max-w-3xl flex flex-col bg-formbox rounded-lg shadow-lg;
-  @apply mt-8 mx-auto px-4 items-center;
+  max-width: 48rem;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--default-brand-bg);
+  border-radius: 0.5rem;
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  margin-top: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  align-items: center;
 }
 
 .formBox {
-  @apply w-full my-4 mx-2 bg-white p-6 rounded-lg shadow-md;
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  background-color: var(--normal-bg);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .title {
-  @apply text-4xl font-bold text-primary-dark mb-4 text-center;
+  font-size: 2.25rem;
+  font-weight: var(--font-bold);
+  color: var(--major-brand-bg);
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
 .message {
-  @apply text-primary-dark;
-  @apply lg:text-regular text-small;
+  color: var(--major-brand-bg);
+  font-size: var(--text-small);
+}
+
+@media (min-width: 1024px) {
+  .message {
+    font-size: var(--text-regular);
+  }
 }
 
 .homeLink {
-  @apply text-focus hover:underline text-center;
+  color: var(--focus-border);
+  text-align: center;
+}
+
+.homeLink:hover {
+  text-decoration: underline;
 }

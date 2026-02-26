@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 
+import { ShishyaDataProvider } from '@utils/shishyaDataProvider';
 
 // Home Page
 import HomePage from '@pages/HomePage';
@@ -18,7 +19,11 @@ export default function ActivePage() {
         <Route path="/home" element={<HomePage />} />
              
         {/* Shishyas routes */}
-        <Route path="/shishyas/add" element={<AddShishya />} />
+        <Route path="/shishyas/add" element={
+          <ShishyaDataProvider>
+            <AddShishya />
+          </ShishyaDataProvider>
+        } />
         <Route path="/shishyas/update" element={<Upcoming />} />
         
         {/* Events routes */}

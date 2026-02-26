@@ -1,5 +1,3 @@
-import type { FormErrors } from '@typedef/FormErrors';
-
 export type RangeTuple = readonly [number, number];
 export type LabelObject = {
     en: string;
@@ -16,11 +14,12 @@ export interface PhoneNumberValue {
 
 export interface BlockProps<T> {
     legend: string;
+    value: T;
     onChange: (value: T) => void;
-    onError: (value: FormErrors) => void;
+    hasError: boolean;
+    placeholder?: string;
     inputRange?: InputRange;
     className?: string;
     required?: boolean;
     disabled?: boolean;
-    validate?:(value: T) => FormErrors;
 }

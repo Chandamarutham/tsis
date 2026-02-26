@@ -24,7 +24,8 @@
       "@pages/*": ["src/pages/*"],
       "@themes/*": ["src/themes/*"],
       "@constants/*": ["src/constants/*"],
-      "@typedef/*": ["src/typedef/*"]
+      "@typedef/*": ["src/typedef/*"],
+      "@blocks/*": ["src/blocks/*"]
     },
 
     /* Linting */

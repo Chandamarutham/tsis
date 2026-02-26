@@ -10,7 +10,7 @@
       "@styles/*": ["styles/*"],
       "@constants/*": ["constants/*"],
       "@typedef/*": ["typedef/*"],
-      "@elements/*": ["elements/*"]
+      "@blocks/*": ["blocks/*"]
     }
   },
   "files": [],

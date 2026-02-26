@@ -2,26 +2,35 @@ import { useState, useContext } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserPlus, faTrashCan, faLock } from '@fortawesome/free-solid-svg-icons';
 
+import InputBox from '@blocks/InputBox';
+import PhoneNumber from '@blocks/PhoneNumber';
+import CheckboxInput from '@blocks/CheckboxInput';
+
 import { LanguageContext } from '@utils/languageContext';
+import { ShishyaDataContext } from '@utils/useShishyaData';
+
 import { FormState } from '@typedef/FormState';
-import type { FormErrors } from 'src/typedef/FormErrors';
+import type { FormErrors } from '@typedef/FormErrors';
+import type { PhoneNumberValue } from '@typedef/BlockValue';
 import type { 
     FamilyMemberDataType, 
-    FormProps 
+    NewFormProps 
 } from '@typedef/ShishyaData';
 
-import country from '@constants/country_prefix.json';
-
-import styles from '@styles/GetFamily.module.css';
+import styles from '@styles/addShishyaCompStyles.module.css';
 
 
 export default function GetFamily(
-    { setParentState, currentData, updateParent, displayErrors }: FormProps<FamilyMemberDataType[]>
+    { setParentState, displayErrors }: NewFormProps
 ){
     const [errors, setErrors] = useState<FormErrors>({});
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);    
+    
+    const shishyaContext = useContext(ShishyaDataContext);
     const language: 'en' | 'ta'  = useContext(LanguageContext)?.language || 'ta';
-
+    
+    const { data, updateData } = shishyaContext || { data: null, updateData: () => {} };
+    const currentData = data?.family_members || [];
     const font_style: string = language === "ta" ? "font-tamil" : "font-english";
 
     const [newMember, setNewMember] = useState<FamilyMemberDataType>({
@@ -31,11 +40,6 @@ export default function GetFamily(
         same_address: false,
         no_edit: false,
     });
-
-    const countryCodeOptions = country.list.map(({ callingCode, name }) => ({
-        label: `(${callingCode}) ${name} `,
-        value: callingCode
-    }));
     
     const fineprint = {
         'ta': '(இந்த படிவத்தில், தங்கள் குடும்பத்தில், தற்போது திருமாளிகை சிஷ்யர்களாக இருக்கும், அல்லது எதிர்காலத்தில் சிஷ்யர்களாகக் கூடியவ்ர்கள் பற்றிய விவரங்களை நிரப்பவும். ஒரே குடும்பத்தில் உள்ளவர்களை அறியவே இந்தத் தகவல் சேகரிக்கப்படுகிறது. வேறு எந்த நோக்கத்திற்கும் அல்ல.)',
@@ -50,6 +54,11 @@ export default function GetFamily(
         setErrors({});
         setIsSubmitting(false);
     }
+
+    const clearErrors = () => {
+        setErrors({});
+        displayErrors({});
+    };
 
     // Validation
     const validateForm = (): boolean => {
@@ -84,16 +93,30 @@ export default function GetFamily(
     }
 
     {/* Handle Events */}
-    // Handle Change
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        setErrors({});
-        displayErrors({});
-        const {name, value} = e.target;
-        setNewMember({ 
-            ...newMember, 
-            [name]: value 
-        });
-    }
+    const handleMemberNameChange = (value: string) => {
+        clearErrors();
+        setNewMember((prevMember) => ({
+            ...prevMember,
+            member_name: value
+        }));
+    };
+
+    const handlePhoneNumberChange = (value: PhoneNumberValue) => {
+        clearErrors();
+        setNewMember((prevMember) => ({
+            ...prevMember,
+            country_code: value.country_code,
+            phone_number: value.phone_number
+        }));
+    };
+
+    const handleSameAddressChange = (checked: boolean) => {
+        clearErrors();
+        setNewMember((prevMember) => ({
+            ...prevMember,
+            same_address: checked
+        }));
+    };
 
     // Handle Add Family Member
     const handleAddMember = () => {
@@ -101,7 +124,7 @@ export default function GetFamily(
             return;
         }
         const updatedMembers = [...currentData, newMember];
-        updateParent(updatedMembers);
+        updateData({ family_members: updatedMembers });
         setNewMember({
             member_name: '',
             phone_number: '',
@@ -109,22 +132,19 @@ export default function GetFamily(
             same_address: false,
             no_edit: false,
         });
-        setErrors({});
-        displayErrors({});
+        clearErrors();
     };
     // Handle Delete Family Member
     const handleDeleteMember = (index: number) => () => {
         const updatedMembers = [...currentData];
         updatedMembers.splice(index, 1);
-        updateParent(updatedMembers);
-        setErrors({});
-        displayErrors({});
+        updateData({ family_members: updatedMembers });
+        clearErrors();
     };
 
     // Handle Previous Button Click
     const handlePrev = () => {
-        setErrors({});
-        displayErrors({});
+        clearErrors();
         setParentState(FormState.GET_BASICS);
     };
 
@@ -132,22 +152,35 @@ export default function GetFamily(
     const handleNext = (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
-        setErrors({});
-        displayErrors({});
-        updateParent(currentData);
+        clearErrors();
+        updateData({ family_members: currentData });
         setParentState(FormState.GET_PREFERENCES);
         setIsSubmitting(false);
         resetControllingStates();
     }
 
+    const newMemberPhoneValue: PhoneNumberValue = {
+        country_code: newMember.country_code,
+        phone_number: newMember.phone_number,
+        e164_number: `${newMember.country_code}${newMember.phone_number.replace(/[^0-9]/g, '')}`
+    };
+
     return(
         <form className={styles.form} onSubmit={handleNext} noValidate>
-            <p className={styles.fineprint + " " + font_style}>{fineprint[language]}</p>
+            <p className={`
+                ${styles.fineprint} 
+                ${language === 'ta' 
+                    ? styles.fontTamil 
+                    : styles.fontEnglish
+                }
+            `}>
+                {fineprint[language]}
+            </p>
             <div className={styles.hiddenOnMobile}>
                 {/* Headings */}
                 <div className={styles.gridLayout}>
                     <h3 className={`${styles.tableHeading} ${font_style}`}>
-                        { {'en': 'S.No.', 'ta': 'வரிசை எண்'}[language] }
+                        { {'en': 'S.No.', 'ta': 'வரிசை'}[language] }
                     </h3>                
                     <h3 className={`${styles.tableHeading} ${font_style} ${styles.spans4Columns}`}>                    
                         { {'en': 'Name', 'ta': 'பெயர்'}[language] }
@@ -162,9 +195,9 @@ export default function GetFamily(
                         { {'en': 'Action', 'ta': 'செயல்'}[language] }
                     </h3>
                 </div>
-            {/* Existing Members Rows */}
+                {/* Existing Members Rows */}
                 {currentData.map((member, index) => (
-                    <div key={`MemberRow-${index}`} className={styles.gridLayout}>
+                    <div key={`MemberRow-${index}`} className={`${styles.gridLayout} ${styles.gridLayout}`}>
                         <div key={`No-${index}`} className={`${styles.tableCell} h-12`}>
                             {index + 1}
                         </div>
@@ -205,62 +238,39 @@ export default function GetFamily(
                         </div>
                     </div>
                 ))}
-                <div className={styles.gridLayout}>
+                <div className={`${styles.gridLayout} ${styles.gridLayout}`}>
                     {/* New Member Input Row */}
                     <div className={`${styles.tableCell}`}>
                         {currentData.length + 1}
                     </div>
                     <div className={`${styles.tableCell} ${styles.spans4Columns}`}>
-                        <input
-                            name="member_name"
-                            type="text"
-                            className={`
-                                ${styles.inputField} ${styles.noBorder} 
-                                ${errors.member_name ? styles.inputError : ''}
-                                text-center
-                            `}
-                            placeholder={{'en': 'Enter name', 'ta': 'பெயரை உள்ளிடுக'}[language]}
+                        <InputBox
+                            legend={{'en': 'Name', 'ta': 'பெயர்'}[language]}
                             value={newMember.member_name}
-                            onChange={handleChange}
+                            onChange={handleMemberNameChange}
+                            hasError={!!errors.member_name}
+                            placeholder={{'en': 'Enter name', 'ta': 'பெயரை உள்ளிடுக'}[language]}
+                            className={styles.memberInputBlock}
                         />
                     </div>
                     <div className={`${styles.tableCell} ${styles.spans4Columns}`}>
-                        <div className={`${styles.phoneGroup} ${styles.noBorder}  ${errors.phone_number ? styles.inputError : ''}`}>
-                            <select
-                                name="country_code"
-                                data-length={newMember.country_code.length}
-                                value={newMember.country_code}
-                                onChange={handleChange}
-                                className={styles.countryCodeSelect}
-                                title={{'en': 'Country Code', 'ta': 'ஐ.எஸ். கோட்'}[language]}
-                            >
-                                {countryCodeOptions.map((option) => (
-                                    <option key={option.label} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
-                            <input
-                                name="phone_number"
-                                type="tel"
-                                value={newMember.phone_number}
-                                onChange={handleChange}
-                                placeholder={{'en': 'Phone Number', 'ta': 'தொலைபேசி எண்'}[language]}
-                                className={styles.phoneInput}
-                            />
-                        </div>
+                        <PhoneNumber
+                            legend={{'en': 'Phone Number', 'ta': 'தொலைபேசி எண்'}[language]}
+                            value={newMemberPhoneValue}
+                            onChange={handlePhoneNumberChange}
+                            hasError={!!errors.phone_number}
+                            className={styles.memberInputBlock}
+                        />
                     </div>
                     <div className={`${styles.tableCell} ${styles.spans2Columns}`}>
-                        <label className={`${styles.checkboxLabel} ${font_style}`}>
-                            <input
-                                type="checkbox"
-                                name="same_address"
-                                checked={newMember.same_address}
-                                onChange={(e) => setNewMember({ ...newMember, same_address: e.target.checked })}
-                                className={styles.checkboxInput}
-                            />
-                            {''}
-                        </label>
+                        <CheckboxInput
+                            legend=""
+                            value={newMember.same_address}
+                            onChange={handleSameAddressChange}
+                            hasError={false}
+                            label=""
+                            className={`${styles.memberInputBlock} ${styles.memberCheckboxBlock}`}
+                        />
                     </div>
                     <div className={styles.tableCell}>
                         <button
@@ -356,58 +366,39 @@ export default function GetFamily(
                         <span className={`${styles.cardLabel} ${font_style}`}>
                             {{'en': 'Name', 'ta': 'பெயர்'}[language]}
                         </span>
-                        <input
-                            name="member_name"
-                            type="text"
-                            className={`${styles.inputField} ${font_style}  ${errors.member_name ? styles.inputError : ''}`}
-                            placeholder={{'en': 'Enter name', 'ta': 'பெயரை உள்ளிடுக'}[language]}
+                        <InputBox
+                            legend={{'en': 'Name', 'ta': 'பெயர்'}[language]}
                             value={newMember.member_name}
-                            onChange={handleChange}
+                            onChange={handleMemberNameChange}
+                            hasError={!!errors.member_name}
+                            placeholder={{'en': 'Enter name', 'ta': 'பெயரை உள்ளிடுக'}[language]}
+                            className={styles.memberInputBlock}
                         />
                     </div>
                     <div className={styles.cardRow}>
                         <span className={`${styles.cardLabel} ${font_style}`}>
                             {{'en': 'Phone Number', 'ta': 'தொலைபேசி'}[language]}
                         </span>
-                        <div className={`${styles.phoneGroup} ${errors.phone_number ? styles.inputError : ''}`}>
-                            <select
-                                name="country_code"
-                                data-length={newMember.country_code.length}
-                                value={newMember.country_code}
-                                onChange={handleChange}
-                                className={styles.countryCodeSelect}
-                                title={{'en': 'Country Code', 'ta': 'ஐ.எஸ்.டி கோட்'}[language]}
-                            >
-                                {countryCodeOptions.map((option) => (
-                                    <option key={option.label} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
-                            <input
-                                name="phone_number"
-                                type="tel"
-                                value={newMember.phone_number}
-                                onChange={handleChange}
-                                placeholder={{'en': 'Phone Number', 'ta': 'தொலைபேசி எண்'}[language]}
-                                className={styles.phoneInput}
-                            />
-                        </div>
+                        <PhoneNumber
+                            legend={{'en': 'Phone Number', 'ta': 'தொலைபேசி எண்'}[language]}
+                            value={newMemberPhoneValue}
+                            onChange={handlePhoneNumberChange}
+                            hasError={!!errors.phone_number}
+                            className={styles.memberInputBlock}
+                        />
                     </div>
                     <div className={styles.cardRow}>
                         <span className={`${styles.cardLabel} ${font_style}`}>
                             {{'en': 'In my address', 'ta': 'என் முகவரியே'}[language]}
                         </span>
-                        <label className={`${styles.checkboxLabel} ${font_style}`}>
-                            <input
-                                type="checkbox"
-                                name="same_address"
-                                checked={newMember.same_address}
-                                onChange={(e) => setNewMember({ ...newMember, same_address: e.target.checked })}
-                                className={styles.checkboxInput}
-                            />
-                            {''}
-                        </label>
+                        <CheckboxInput
+                            legend=""
+                            value={newMember.same_address}
+                            onChange={handleSameAddressChange}
+                            hasError={false}
+                            label=""
+                            className={`${styles.memberInputBlock} ${styles.memberCheckboxBlock}`}
+                        />
                     </div>
                     <div className={styles.cardRow}>
                         <span className={`${styles.cardLabel} ${font_style}`}>
@@ -429,7 +420,11 @@ export default function GetFamily(
             <div className={styles.gridLayout}>
                 <button
                     type="button"
-                    className={styles.prevButton}
+                    className={`
+                        ${styles.prevButton}
+                        ${language === 'ta' 
+                            ? styles.fontTamil 
+                            : styles.fontEnglish}`}
                     onClick={handlePrev}
                     disabled={isSubmitting}
                 >
@@ -437,7 +432,11 @@ export default function GetFamily(
                 </button>
                 <button
                     type="submit"
-                    className={styles.nextButton}
+                    className={`
+                        ${styles.nextButton}
+                        ${language === 'ta' 
+                            ? styles.fontTamil 
+                            : styles.fontEnglish}`}
                     disabled={isSubmitting}
                 >
                     {isSubmitting 

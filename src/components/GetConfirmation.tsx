@@ -1,44 +1,53 @@
 import { useContext } from 'react';
 import { LanguageContext } from '@utils/languageContext';
+import { ShishyaDataContext } from '@utils/useShishyaData';
 import { useConfirm } from '@utils/useConfirm';
 import { FormState } from '@typedef/FormState';
 import type { 
     ShishyaDataType,
-    FormProps,
+    NewFormProps,
 } from '@typedef/ShishyaData';
-import type { JsonDataType } from '@typedef/JsonData';
 
-import genders from '@constants/genders.json';
-import panchasamskaram from '@constants/panchasamskaram.json';
-import marriage from '@constants/marriage.json';
-import professions from '@constants/professions.json';
-import birthstars from '@constants/birthstars.json';
-import tamil_months from '@constants/tamil_months.json';
-import interests from '@constants/interests.json';
-import addressitem from '@constants/addresses.json';
-import participation from '@constants/participation.json';
 
-import styles from '@styles/GetConfirmation.module.css';
+import {
+    genders, 
+    panchasamskaram, 
+    marriageStatuses, 
+    professions,
+    birthStars,
+    tamilMonths,
+    interests,
+    addressTypes,
+    participationEvents,
+    type BilingualOption
 
+} from '@constants/optionConstants';
+
+import styles from '@styles/addShishyaCompStyles.module.css';
 
 export default function GetConfirmation(
-    {setParentState, currentData, updateParent}: FormProps<ShishyaDataType>
+    {setParentState}: NewFormProps
 ) {
+    const shishyaContext = useContext(ShishyaDataContext);
     const language: 'en' | 'ta'  = useContext(LanguageContext)?.language || 'ta';
-    const font_style: string = language === "ta" ? "font-tamil" : "font-english";
+    const font_style: string = language === "ta" 
+        ? styles.fontTamil 
+        : styles.fontEnglish;
     const confirm = useConfirm();
+    
+    const { data } = shishyaContext || { data: null, updateData: () => {} };
+    const currentData = data as ShishyaDataType;
         
     
     {/* Helper Functions */}
     // Helper function to get label by index
-    const getLabel = (jsonData: JsonDataType, index: number | boolean, key: string = 'name') => {
+    const getLabel = (data: BilingualOption[], index: number | boolean) => {
         if (typeof index === 'boolean') {
             index = index ? 0 : 1;
         }
         if (index === -1 || index === undefined) return null;
-        const items = jsonData[key];
-        if (items && items[index]) {
-            return items[index][language] || null;
+        if (data && data[index]) {
+            return data[index][language] || null;
         }
         return null;
     };
@@ -49,7 +58,7 @@ export default function GetConfirmation(
             return null;
         }
         const interestsList = currentData.details.interests
-            .map(index => getLabel(interests, index, 'list'))
+            .map(index => getLabel(interests, index))
             .filter(item => item !== null);
         return interestsList.length > 0 ? interestsList.join(', ') : null;
     };
@@ -60,7 +69,7 @@ export default function GetConfirmation(
             return null;
         }
         const participationList = currentData.preferences.programs
-            .map(index => getLabel(participation, index, 'list'))
+            .map(index => getLabel(participationEvents, index))
             .filter(item => item !== null);
         return participationList.length > 0 ? participationList.join(', ') : null;
     };
@@ -107,9 +116,9 @@ export default function GetConfirmation(
         });
         
         if (result) {
-            // On confirmation, submit data
+            // On confirmation, transition to completion state
+            // AddShishya will handle the API POST on this state transition
             setParentState(FormState.GET_COMPLETION);
-            updateParent(currentData);
         }
     }
 
@@ -179,36 +188,36 @@ export default function GetConfirmation(
                                 <td className={styles.dataColumn}>{currentData.details.gotram}</td>
                             </tr>
                         )}
-                        {hasValue(currentData.details.tamil_month) && getLabel(tamil_months, currentData.details.tamil_month) && (
+                        {hasValue(currentData.details.tamil_month) && getLabel(tamilMonths, currentData.details.tamil_month) && (
                             <tr className={styles.tableRow}>
                                 <td className={`${styles.firstColumn} ${font_style}`}>
                                     {{'en': 'Tamil Month', 'ta': 'தமிழ் மாதம்'}[language]}
                                 </td>
-                                <td className={styles.dataColumn}>{getLabel(tamil_months, currentData.details.tamil_month)}</td>
+                                <td className={styles.dataColumn}>{getLabel(tamilMonths, currentData.details.tamil_month)}</td>
                             </tr>
                         )}
-                        {hasValue(currentData.details.birthstar) && getLabel(birthstars, currentData.details.birthstar) && (
+                        {hasValue(currentData.details.birthstar) && getLabel(birthStars, currentData.details.birthstar) && (
                             <tr className={styles.tableRow}>
                                 <td className={`${styles.firstColumn} ${font_style}`}>
                                     {{'en': 'Birth Star', 'ta': 'நட்சத்திரம்'}[language]}
                                 </td>
-                                <td className={styles.dataColumn}>{getLabel(birthstars, currentData.details.birthstar)}</td>
+                                <td className={styles.dataColumn}>{getLabel(birthStars, currentData.details.birthstar)}</td>
                             </tr>
                         )}
-                        {hasValue(currentData.details.marital_status) && getLabel(marriage, currentData.details.marital_status, 'status') && (
+                        {hasValue(currentData.details.marital_status) && getLabel(marriageStatuses, currentData.details.marital_status) && (
                             <tr className={styles.tableRow}>
                                 <td className={`${styles.firstColumn} ${font_style}`}>
                                     {{'en': 'Marital Status', 'ta': 'திருமண நிலை'}[language]}
                                 </td>
-                                <td className={styles.dataColumn}>{getLabel(marriage, currentData.details.marital_status, 'status')}</td>
+                                <td className={styles.dataColumn}>{getLabel(marriageStatuses, currentData.details.marital_status)}</td>
                             </tr>
                         )}
-                        {hasValue(currentData.details.panchasamskaram) && getLabel(panchasamskaram, currentData.details.panchasamskaram, 'options') && (
+                        {hasValue(currentData.details.panchasamskaram) && getLabel(panchasamskaram, currentData.details.panchasamskaram) && (
                             <tr className={styles.tableRow}>
                                 <td className={`${styles.firstColumn} ${font_style}`}>
                                     {{'en': 'Panchasamskaram', 'ta': 'பஞ்ச சம்ஸ்காரம்'}[language]}
                                 </td>
-                                <td className={styles.dataColumn}>{getLabel(panchasamskaram, currentData.details.panchasamskaram, 'options')}</td>
+                                <td className={styles.dataColumn}>{getLabel(panchasamskaram, currentData.details.panchasamskaram)}</td>
                             </tr>
                         )}
                         {hasValue(currentData.details.profession) && getLabel(professions, currentData.details.profession) && (
@@ -372,7 +381,7 @@ export default function GetConfirmation(
                                     {{'en': 'Communication Address', 'ta': 'தொடர்பு முகவரி'}[language]}
                                 </td>
                                 <td className={`${styles.dataColumn} ${font_style}`}>
-                                    {getLabel(addressitem,currentData.preferences.contact_current_address,'type') || 'N/A'}
+                                    {getLabel(addressTypes, currentData.preferences.contact_current_address) || 'N/A'}
                                 </td>
                             </tr>
                             {getParticipationInterests() && (
@@ -390,17 +399,27 @@ export default function GetConfirmation(
         </div>
 
         {/* Action Buttons */}
-        <div className={styles.buttonContainer}>
+        <div className={styles.gridLayout}>
+            <hr className={`
+                ${styles.separator}
+                ${styles.spansFullWidth}
+            `} />
             <button
                 type="button"
-                className={`${styles.prevBtn} ${font_style}`}
+                className={`
+                    ${styles.prevButton} 
+                    ${font_style}
+                `}
                 onClick={() => setParentState(FormState.GET_PREFERENCES)}
             >
                 {{'en': 'Review', 'ta': 'மதிப்பாய்வு'}[language]}
             </button>
             <button
                 type="button"
-                className={`${styles.nextBtn} ${font_style}`}
+                className={`
+                    ${styles.nextButton} 
+                    ${font_style}
+                `}
                 onClick={handleConfirmation}
             >
                 {{'en': 'Submit', 'ta': 'சமர்ப்பிக்கவும்'}[language]}

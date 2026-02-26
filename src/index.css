@@ -1,3 +1,6 @@
+/* React DatePicker - must be imported before other styles to ensure proper styling */
+@import "react-datepicker/dist/react-datepicker.css";
+
 :root {
   /* Fonts */
   --font-tamil:
@@ -34,59 +37,27 @@
   /* Border and focus colours */
   --input-border: rgba(209, 213, 219, 1);
   --focus-border: rgba(59, 130, 246, 0.75);
-  --normal-border: {
-    border-color: var(--input-border);
-    box-shadow: none;
-  };
-  --focus-border: {
-    border-color: var(--focus-border);
-    box-shadow: 0 0 0 4px var(--focus-border);
-  };
-  --no-border: {
-    border-style: transparent;
-    box-shadow: none;
-  };
 
   /* Font sizes */
-  --text-small: {
-    font-size: 0.75rem;
-  };
-  --text-medium: {
-    font-size: 0.875rem;
-  };
-  --text-regular: {
-    font-size: 1rem;
-  };
-  --text-subtitle: {
-    font-size: 1.25rem;
-  };
-  --text-title: {
-    font-size: 1.875rem;
-  };
-  --text-headline: {
-    font-size: 3rem;
-  };
+  --text-micro: 0.625rem;
+  --text-small: 0.75rem;
+  --text-medium: 0.875rem;
+  --text-regular: 1rem;
+  --text-subtitle: 1.25rem;
+  --text-title: 1.875rem;
+  --text-headline: 3rem;
 
   /* Font thickness */
-  --font-thin: {
-    font-weight: 300;
-  };
-  --font-regular: {
-    font-weight: 400;
-  };
-  --font-semibold: {
-    font-weight: 600;
-  };
-  --font-bold: {
-    font-weight: 700;
-  };
+  --font-thin: 300;
+  --font-regular: 400;
+  --font-semibold: 600;
+  --font-bold: 700;
 
   font-weight: var(--font-regular);
   color: var(--normal-color);
   background-color: var(--normal-bg);
 
   color-scheme: light dark;
-  line-height: 1.5;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -113,7 +84,6 @@ body {
 
 h1 {
   font-size: var(--text-headline);
-  line-height: 1.1;
 }
 
 input,

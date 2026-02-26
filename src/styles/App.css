@@ -1,10 +1,13 @@
-@import "tailwindcss";
-@import "@styles/theme.css";
-
 #root {
-  @apply min-h-screen w-full text-normal bg-background font-english;
+  min-height: 100vh;
+  width: 100%;
+  color: var(--normal-color);
+  background-color: var(--normal-bg);
+  font-family: var(--font-english);
+  display: flex;
+  flex-direction: column;
 }
 
 main {
-  @apply flex-1;
+  flex: 1;
 }

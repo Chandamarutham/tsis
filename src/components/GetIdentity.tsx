@@ -1,73 +1,94 @@
 import { useState, useContext } from 'react';
 import { LanguageContext } from '@utils/languageContext';
-import type { 
-    FormProps, 
-    IdentityDataType,
-} from '@typedef/ShishyaData';
+import { ShishyaDataContext } from '@utils/useShishyaData';
 import type { FormErrors } from '@typedef/FormErrors';
+import type { PhoneNumberValue } from '@typedef/BlockValue';
+import type { NewFormProps } from '@typedef/ShishyaData';
+
 import { FormState } from '@typedef/FormState';
-import country from '@constants/country_prefix.json';
-import styles from '@styles/GetIdentity.module.css';
+
+import InputBox from '@blocks/InputBox';
+import PhoneNumber from '@blocks/PhoneNumber';
+
+import styles from '@styles/addShishyaCompStyles.module.css';
+
 
 export default function GetIdentity({
-    setParentState, currentData, updateParent, displayErrors
-} : FormProps<IdentityDataType>) {
-    const [errors, setErrors] = useState<FormErrors>({});
+    setParentState, displayErrors
+}: NewFormProps) {
+    const [nameErrors, setNameErrors] = useState<FormErrors>({});
+    const [phoneErrors, setPhoneErrors] = useState<FormErrors>({});
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const shishyaContext = useContext(ShishyaDataContext);
     const language: 'en' | 'ta'  = useContext(LanguageContext)?.language || 'ta';
-    const font_style: string = language === "ta" ? "font-tamil" : "font-english";
-    const width_limit: string ="max-w-85 ml-auto";
-    const countryCodeOptions = country.list.map(({ callingCode, name }) => ({
-        label: `(${callingCode}) ${name} `,
-        value: callingCode
-    }));
-    const fullPhoneNumber = `${currentData.country_code}${currentData.phone_number.replace(/^\+\d+\s?/, '')}`;
+    if (!shishyaContext) {
+        return null;
+    }
+
+    const { data, updateData } = shishyaContext;
+    const currentData = data.identity;
+    const e164Number = `${currentData.country_code}${currentData.phone_number.replace(/^\+\d+\s?/, '')}`;
     
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        updateParent({
-            ...currentData,
-            [name]: value
+    const handleNameChange = (new_name: string) => {
+        updateData({
+            identity: {
+                ...currentData,
+                shishya_name: new_name
+            }
         });
-        setErrors({});
+        setNameErrors({});
+        setPhoneErrors({});
         displayErrors({});
     }
 
-    const handleNext = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        setErrors({});
+    const handlePhoneNumberChange = (phNoVal: PhoneNumberValue) => {
+        updateData({
+            identity: {
+                ...currentData,
+                country_code: phNoVal.country_code,
+                phone_number: phNoVal.phone_number
+            }
+        });
+        setNameErrors({});
+        setPhoneErrors({});
+        displayErrors({});
+    }
 
-        // Perform validation inline - not a big form, so keeping it simple
+    const validate = (): FormErrors => {
         const newErrors: FormErrors = {};
         if(!currentData.shishya_name.trim()) {
-            newErrors.shishya_name = {
-                "en": "Name is required!",
-                "ta": "பெயர் குறிப்பிடப்பட வேண்டும்!"
-            }[language];
+            newErrors.shishya_name = "name_required";
+            setNameErrors(newErrors);
         }
-        if(!currentData.phone_number.trim()) {
-            newErrors.phone_number = {
-                "en": "Phone number is required!",
-                "ta": "தொலைபேசி எண் குறிப்பிடப்பட வேண்டும்!"
-            }[language];
-        } else if (!/^\+(?:[0-9] ?){6,14}[0-9]$/.test(fullPhoneNumber)) {
-            newErrors.phone_number = {
-                "en": "Invalid phone number format!",
-                "ta": "தொலைபேசி எண் தவறானக உள்ளது!"
-            }[language];
+        if (currentData.phone_number.trim() === '') {
+            newErrors.phone_number = "phone_required";
+            setPhoneErrors(newErrors);
+        } else if (!/^\+(?:[0-9] ?){6,14}[0-9]$/.test(e164Number)) {
+            newErrors.phone_number = "invalid_phone";
+            setPhoneErrors(newErrors);
         }
+        console.log("Validation Errors: ", newErrors);
+        return newErrors;
+    }
 
+    const handleNext = async (e: React.SubmitEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        // Validate before moving to next step
+        const newErrors: FormErrors = validate();
         if(Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
+            setNameErrors(newErrors);
+            setPhoneErrors(newErrors);
             displayErrors(newErrors);
             setIsSubmitting(false);
             return;
         }
-
         // If validation passes, update parent and move to next state
-        updateParent(currentData);
+        updateData({ identity: currentData });
         setIsSubmitting(false);
+        setNameErrors({});
+        setPhoneErrors({});
         setParentState(FormState.GET_ADDRESS); // Assuming 1 is the next state
     };
 
@@ -75,74 +96,61 @@ export default function GetIdentity({
         <form className={styles.form} noValidate onSubmit={handleNext}>
             <div className={styles.gridLayout}>
                 {/* Name Field */}
-                <div className={`${styles.formGroup} ${styles.spans6Columns}`}>
-                    <label className={`${styles.formLabel} ${font_style}`} htmlFor='shishya_name'>
-                        {{'en': 'Name', 'ta': 'பெயர்'}[   language]}:
-                    </label>
-                    <input className={`${styles.inputField} ${width_limit} ${errors.shishya_name ? styles.inputError : ''}`}
-                        type="text"
-                        id="shishya_name"
-                        name="shishya_name"
-                        value={currentData.shishya_name}
-                        onChange={handleChange}
-                        placeholder={
-                            {
-                                'en': 'Enter your full name', 
-                                'ta': 'தங்கள் முழு பெயரை உள்ளிடவும்'
-                            }[language]}
-                    />
-                </div>
+                <InputBox
+                    legend={
+                        {
+                            'en': 'Full Name',
+                            'ta': 'முழு பெயர்'
+                        }[language]
+                    }
+                    value={currentData.shishya_name}
+                    onChange={handleNameChange}
+                    hasError={!!nameErrors.shishya_name}
+                    required={true}
+                    placeholder={
+                        {
+                            'en': 'Enter your full name', 
+                            'ta': 'தங்கள் முழு பெயரை உள்ளிடவும்'
+                        }[language]}
+                    className={styles.spans6Columns}
+                />
+
 
                 {/* Phone Group Field */}
-                <div 
-                    className={`${styles.formGroup} ${styles.spans6Columns}`}
-                >
-                    <label
-                        className={`${styles.formLabel} ${font_style}`}
-                        htmlFor='phone_number'
-                    >
-                        {{'en': 'Phone Number', 'ta': 'தொலைபேசி'}[language]}:
-                    </label>
-                    <div className={`${styles.phoneGroup} ${errors.phone_number ? styles.inputError : ''} ${"font-english"} ${width_limit}`}>
-                    <select
-                        data-length={currentData.country_code.length}
-                        name="country_code"
-                        value={currentData.country_code}
-                        onChange={handleChange}
-                        className={styles.countryCodeSelect}
-                        aria-label={{'en': 'Country Code', 'ta': 'ஐ.எஸ்.டி கோடு'}[language]}
-                    >
-                        {countryCodeOptions.map((option) => (
-                            <option 
-                                key={option.label} 
-                                value={option.value}
-                            >
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-                    <input  
-                        className={styles.phoneInput}
-                        type="tel"
-                        id="phone_number"
-                        name="phone_number"
-                        value={currentData.phone_number}
-                        onChange={handleChange}
-                        placeholder={
-                            {
-                                'en': 'Phone number', 
-                                'ta': 'தொலைபேசி எண்'
-                            }[language]}
-                    />
-                    </div>
-                </div>
+                <PhoneNumber
+                    legend={
+                        {
+                            'en': 'Phone Number',
+                            'ta': 'தொலைபேசி எண்'
+                        }[language]
+                    }
+                    value={{
+                        country_code: currentData.country_code,
+                        phone_number: currentData.phone_number,
+                        e164_number: e164Number
+                    }}
+                    onChange={handlePhoneNumberChange}
+                    hasError={!!phoneErrors.phone_number}
+                    required={true}
+                    className={styles.spans6Columns}
+                />
                 {/* Separator */}
-                <hr className={`${styles.separator} ${styles.spansFullWidth}`} />
+                <hr className={`
+                    ${styles.separator} 
+                    ${styles.spansFullWidth}
+                `} />
 
                 {/* Next Button */}
                 <button
                     type="submit"
-                    className={`${styles.nextButton} ${isSubmitting ? styles.buttonDisabled : ''} ${font_style}`}   
+                    className={`
+                        ${styles.nextButton} 
+                        ${isSubmitting ? styles.buttonDisabled : ''} 
+                        ${language === 'ta' 
+                            ? styles.fontTamil 
+                            : styles.fontEnglish
+                        }
+                    `}
                     disabled={isSubmitting}
                 >
                     {isSubmitting

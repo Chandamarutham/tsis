@@ -1,0 +1,243 @@
+.fieldset {
+    border: 0;
+    margin: 0.5rem;
+    padding: 0;
+    min-width: 0;
+}
+
+.legend {
+    font-weight: var(--font-semibold);
+    color: var(--normal-color);
+    font-size: var(--text-small);
+    font-family: var(--english-font), var(--tamil-font);
+    margin: 0;
+    padding-top: 0.5rem;
+}
+
+@media (min-width: 768px) {
+    .legend {
+        font-size: var(--text-medium);
+    }
+}
+
+.required {
+    color: var(--error-color, #ef4444);
+    margin-left: 0.2rem;
+}
+
+.group {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: stretch;
+    border: 1px solid
+        var(--input-border-color, var(--color-input-border, #d1d5db));
+    border-radius: 0.5rem;
+    background-color: var(--input-background, #ffffff);
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+
+.group:focus-within {
+    border-color: var(--focus-border-color, #3b82f6);
+    box-shadow: 0 0 0 2px var(--focus-ring-color, rgba(59, 130, 246, 0.2));
+}
+
+.group.error {
+    border-color: var(--error-color, #ef4444) !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15) !important;
+}
+
+.group.error:focus-within {
+    border-color: var(--error-color, #ef4444) !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15) !important;
+}
+
+.noborder,
+.noborder:focus-within,
+.noborder.error,
+.noborder.error:focus-within {
+    border: none;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.field {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--normal-color);
+    -webkit-text-fill-color: var(--normal-color); /* For Safari */
+    font-family: var(--english-font), var(--tamil-font);
+    font-size: var(--text-medium);
+    padding: 0.5rem;
+    min-height: 1.5rem;
+    line-height: 1.2;
+}
+
+.fieldControl {
+    appearance: auto;
+    min-height: 2.5rem;
+    cursor: pointer;
+}
+
+.field::placeholder {
+    color: var(--placeholder-color, #9ca3af);
+    -webkit-text-fill-color: var(--placeholder-color);
+    opacity: 1;
+}
+
+.fieldset:disabled .group {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.fieldset:disabled .field {
+    cursor: not-allowed;
+}
+
+.fontTamil {
+    font-family: var(--tamil-font);
+}
+
+.fontEnglish {
+    font-family: var(--english-font);
+}
+
+
+/* Specific styles for PhoneNumber block */
+.countrySelect {
+  border: none;
+  outline: none;
+  background: transparent; /* Can cause trouble in Safari */
+  -webkit-text-fill-color: var(--normal-color); /* For Safari */
+  color: var(--normal-color);
+  font-size: var(--text-medium);
+  padding: 0.5rem;
+  min-height: 1.5rem;
+  line-height: 1.2;
+}
+
+.countrySelect {
+  flex: 0 0 auto;
+  appearance: none;
+  cursor: pointer;
+}
+
+.countrySelect[data-code-length="2"] {
+  width: 4.25ch;
+}
+
+.countrySelect[data-code-length="3"] {
+  width: 5.25ch;
+}
+
+.countrySelect[data-code-length="4"] {
+  width: 6.25ch;
+}
+
+.countrySelect[data-code-length="5"] {
+  width: 7.25ch;
+}
+
+.countrySelect[data-code-length="6"] {
+  width: 8.25ch;
+}
+
+.countrySelect option {
+  color: var(--normal-color);
+}
+
+@media (min-width: 768px) {
+    .countrySelect[data-code-length="2"] {
+        width: 4ch;
+    }
+
+    .countrySelect[data-code-length="3"] {
+        width: 5ch;
+    }
+
+    .countrySelect[data-code-length="4"] {
+        width: 6ch;
+    }
+
+    .countrySelect[data-code-length="5"] {
+        width: 7ch;
+    }
+
+    .countrySelect[data-code-length="6"] {
+        width: 8ch;
+    }
+
+    .countrySelect,
+    .phoneInput {
+        font-size: var(--text-medium);
+    }
+}
+
+/* Specific styles for DateInput block */
+.dtp_input {
+    width: 100%;
+    box-sizing: border-box;
+    height: 2.5rem;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--normal-color);
+    font-family: var(--english-font), var(--tamil-font);
+    font-size: var(--text-medium);
+    padding: 0.5rem 0.75rem;
+    min-height: 1.5rem;
+}
+
+.dtp_wrapper {
+    width: 100%;
+    cursor: pointer;
+}
+
+/* Specific styles for CheckboxInput block */
+.chk_item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2rem;
+    color: var(--normal-color);
+    font-family: var(--english-font), var(--tamil-font);
+    font-size: var(--text-small);
+}
+
+@media (min-width: 768px) {
+    .chk_item {
+        font-size: var(--text-medium);
+    }
+}
+
+.chk_checkbox {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--focus-border-color, #3b82f6);
+}
+
+.chk_label {
+    line-height: 1.2;
+}
+
+.chk_empty {
+    color: var(--placeholder-color);
+    font-family: var(--english-font), var(--tamil-font);
+    font-size: var(--text-small);
+}
+
+.chk_fieldset:disabled .chk_group {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.chk_fieldset:disabled .chk_item,
+.chk_fieldset:disabled .chk_checkbox {
+    cursor: not-allowed;
+}

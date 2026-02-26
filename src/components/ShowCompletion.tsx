@@ -8,7 +8,7 @@ import type {
 
 import { FormState } from '@typedef/FormState';
 
-import styles from '@styles/ShowCompletion.module.css';
+import styles from '@styles/addShishyaCompStyles.module.css';
 
 export default function ShowCompletion(
     { setParentState, currentData }: FormProps<ShishyaDataResultType>

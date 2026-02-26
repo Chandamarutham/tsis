@@ -1,9 +1,17 @@
-@import 'tailwindcss';
-@import '@styles/theme.css';
-
-
 .container {
-  @apply max-w-5xl flex flex-col bg-formbox rounded-lg shadow-lg;
-  @apply mt-8 mx-auto px-4 items-center;
+  max-width: 64rem;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--default-brand-bg);
+  border-radius: 0.5rem;
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  margin-top: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  align-items: center;
   min-height: auto !important;
 }
