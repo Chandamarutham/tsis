@@ -118,7 +118,7 @@ export default function SelectInput({
                 <select
                     name={`${legend.toLowerCase().replace(/\s+/g, '_')}`}
                     aria-label={legend}
-                    className={`${styles.field} ${styles.fieldControl}`}
+                    className={styles.fieldControl}
                     value={selectValue}
                     onChange={handleSelectChange}
                     disabled={disabled}
