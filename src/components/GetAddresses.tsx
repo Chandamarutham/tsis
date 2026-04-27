@@ -243,8 +243,13 @@ export default function GetAddresses({
                     ta: 'வீட்டு எண் குறிப்பிடப்பட வேண்டும்!',
                 }[language];
             }
+            if (address.door_no && address.door_no.length > 50) {
+                allErrors[`door_no_${index}`] = {
+                    en: 'Door number should not exceed 50 characters!',
+                    ta: 'வீட்டு எண் 50 எழுத்துகளை விட அதிகமாக இருக்கக்கூடாது!',
+                }[language];
+            }
         });
-
         setErrors(allErrors);
         displayErrors(allErrors);
         return Object.keys(allErrors).length === 0;
